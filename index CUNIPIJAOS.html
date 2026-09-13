@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUNIPIJAOS · Registro cunícola</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EFE9DC;
+    --surface: #FBF8F2;
+    --surface-2: #F3EDE0;
+    --border: #D9CFB8;
+    --text: #2A2620;
+    --muted: #786F5C;
+    --primary: #3F5B43;
+    --primary-dark: #2C4030;
+    --primary-light: #6E8A6F;
+    --accent: #B5591F;
+    --warn: #B4831F;
+    --danger: #A13B2A;
+    --good: #3F5B43;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.font-display{ font-family:'Fraunces', serif; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  /* ---- Layout shell ---- */
+  .app-header{
+    background:var(--primary-dark);
+    color:#EFE9DC;
+    border-bottom:1px solid #1E2E20;
+  }
+  .app-header .subtitle{ color:#C9D6C6; }
+  .ghost-btn{
+    border:1px solid rgba(239,233,220,.35);
+    color:#EFE9DC;
+    background:transparent;
+    font-size:.8rem;
+    padding:.4rem .7rem;
+    border-radius:5px;
+    transition:background .15s ease;
+  }
+  .ghost-btn:hover{ background:rgba(239,233,220,.12); }
+
+  /* ---- Folder-style tabs ---- */
+  .tabbar{ display:flex; gap:.25rem; padding:0 1.25rem; border-bottom:1px solid var(--border); background:var(--bg); }
+  .tab-btn{
+    font-family:'IBM Plex Sans';
+    font-size:.92rem;
+    padding:.65rem 1.15rem;
+    border:1px solid var(--border);
+    border-bottom:none;
+    border-radius:7px 7px 0 0;
+    background:var(--surface-2);
+    color:var(--muted);
+    position:relative; top:1px;
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background:var(--surface);
+    color:var(--primary-dark);
+    font-weight:600;
+    border-color:var(--border);
+    border-bottom:1px solid var(--surface);
+  }
+  .tab-panel-wrap{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-top:none;
+    border-radius:0 0 8px 8px;
+    padding:1.5rem;
+    min-height:60vh;
+  }
+
+  /* ---- Buttons ---- */
+  .btn{
+    font-family:'IBM Plex Sans';
+    font-weight:500;
+    font-size:.9rem;
+    padding:.55rem 1rem;
+    border-radius:6px;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:filter .15s ease;
+  }
+  .btn:hover{ filter:brightness(1.08); }
+  .btn-primary{ background:var(--primary); color:#F6F3EB; }
+  .btn-outline{ background:transparent; border:1px solid var(--border); color:var(--text); }
+  .btn-danger{ background:transparent; border:1px solid var(--danger); color:var(--danger); }
+  .btn-sm{ padding:.3rem .6rem; font-size:.78rem; }
+
+  /* ---- Tables ---- */
+  table{ width:100%; border-collapse:collapse; font-size:.88rem; }
+  thead th{
+    text-align:left; font-weight:600; color:var(--muted);
+    font-size:.75rem; letter-spacing:.02em;
+    padding:.5rem .6rem; border-bottom:1px solid var(--border);
+  }
+  tbody td{ padding:.55rem .6rem; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tbody tr:hover{ background:var(--surface-2); }
+  .id-cell{ font-family:'IBM Plex Mono'; font-size:.82rem; color:var(--primary-dark); }
+
+  /* ---- Badges ---- */
+  .badge{
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.74rem; padding:.2rem .55rem;
+    border:1px solid var(--border); border-radius:4px; white-space:nowrap;
+  }
+  .badge .dot{ width:6px; height:6px; border-radius:50%; flex:none; }
+  .b-primary .dot{ background:var(--primary); }
+  .b-good .dot{ background:var(--good); }
+  .b-warn .dot{ background:var(--warn); }
+  .b-danger .dot{ background:var(--danger); }
+  .b-muted .dot{ background:#9C927A; }
+
+  /* ---- Alert rows ---- */
+  .alert-row{
+    display:flex; align-items:flex-start; gap:.75rem;
+    padding:.6rem .7rem; border:1px solid var(--border); border-left-width:4px;
+    border-radius:5px; background:var(--surface); margin-bottom:.5rem;
+  }
+  .alert-row.atrasado{ border-left-color:var(--danger); }
+  .alert-row.hoy{ border-left-color:var(--warn); }
+  .alert-row.proximo{ border-left-color:var(--primary); }
+
+  /* ---- Forms ---- */
+  label{ font-size:.8rem; color:var(--muted); display:block; margin-bottom:.25rem; }
+  input, select, textarea{
+    width:100%; border:1px solid var(--border); border-radius:5px;
+    padding:.5rem .6rem; font-size:.88rem; background:#fff; color:var(--text);
+    font-family:'IBM Plex Sans';
+  }
+  input:focus, select:focus, textarea:focus{ outline:2px solid var(--primary-light); outline-offset:1px; }
+  .field{ margin-bottom:.9rem; }
+
+  /* ---- Modal ---- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(20,18,12,.45);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:3vh 1rem; overflow-y:auto; z-index:50;
+  }
+  .modal-box{
+    background:var(--surface); border-radius:10px; border:1px solid var(--border);
+    width:100%; max-width:720px; padding:1.5rem 1.6rem 1.75rem;
+    box-shadow:0 20px 45px rgba(0,0,0,.18);
+  }
+  .modal-box.wide{ max-width:920px; }
+  .section-title{
+    font-family:'Fraunces'; font-size:1.02rem; color:var(--primary-dark);
+    border-bottom:1px solid var(--border); padding-bottom:.4rem; margin:1.3rem 0 .8rem;
+  }
+  .section-title:first-of-type{ margin-top:0; }
+
+  .warn-banner{
+    border:1px solid var(--danger); background:#F7E9E5; color:#7A2A1D;
+    padding:.6rem .8rem; border-radius:6px; font-size:.85rem; margin-bottom:1rem;
+    display:flex; gap:.5rem; align-items:flex-start;
+  }
+
+  .readonly-pill{
+    font-family:'IBM Plex Mono'; font-size:.82rem; background:var(--surface-2);
+    border:1px solid var(--border); border-radius:5px; padding:.5rem .6rem; color:var(--muted);
+  }
+
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb{ background:#CDC2A6; border-radius:6px; }
+
+  .toast{
+    position:fixed; bottom:1.25rem; right:1.25rem; background:var(--primary-dark);
+    color:#F6F3EB; padding:.65rem 1rem; border-radius:6px; font-size:.85rem;
+    box-shadow:0 8px 24px rgba(0,0,0,.25); z-index:100; opacity:0; transform:translateY(8px);
+    transition:all .25s ease; pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:640px){
+    .tabbar{ overflow-x:auto; }
+    .modal-box{ padding:1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header px-5 py-4 flex items-center justify-between flex-wrap gap-3">
+  <div>
+    <h1 class="text-xl font-semibold">CUNIPIJAOS</h1>
+    <div class="subtitle text-xs">Registro y control cunícola</div>
+  </div>
+  <div class="flex items-center gap-3 flex-wrap">
+    <span class="text-xs subtitle" id="hoyLabel"></span>
+    <button class="ghost-btn" onclick="exportarDatos()">Exportar respaldo</button>
+    <label class="ghost-btn cursor-pointer">
+      Importar respaldo
+      <input type="file" accept="application/json" class="hidden" onchange="importarDatos(event)">
+    </label>
+  </div>
+</header>
+
+<nav class="tabbar mt-4" id="tabbar">
+  <button class="tab-btn" data-tab="panel" onclick="cambiarTab('panel')">Panel de tareas</button>
+  <button class="tab-btn" data-tab="ejemplares" onclick="cambiarTab('ejemplares')">Ejemplares</button>
+  <button class="tab-btn" data-tab="lotes" onclick="cambiarTab('lotes')">Ciclos productivos</button>
+  <button class="tab-btn" data-tab="estadisticas" onclick="cambiarTab('estadisticas')">Estadísticas</button>
+</nav>
+
+<main class="px-1 sm:px-0 max-w-6xl mx-auto pb-16">
+  <div class="tab-panel-wrap">
+    <section id="tab-panel"></section>
+    <section id="tab-ejemplares" class="hidden"></section>
+    <section id="tab-lotes" class="hidden"></section>
+    <section id="tab-estadisticas" class="hidden"></section>
+  </div>
+</main>
+
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   ESTADO Y PERSISTENCIA
+   ========================================================= */
+const LS_KEY = 'cunipijaos_v1';
+let DB = { conejos: [], lotes: [] };
+
+function datosPorDefecto(){
+  return {
+    conejos: [
+      { id_conejo:'CP_001', sexo:'MACHO',  raza:'MIX HOLANDES', id_padre:null, id_madre:null,   estado_disponibilidad:'BAJA',   estado_productivo:'BAJA_VENTA' },
+      { id_conejo:'CP_002', sexo:'MACHO',  raza:'CAL*NZ',       id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE' },
+      { id_conejo:'CP_003', sexo:'MACHO',  raza:'CAL*NZ',       id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DESARROLLO' },
+      { id_conejo:'CP_004', sexo:'HEMBRA', raza:'MIX',          id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'MATERNIDAD_LACTANTE' },
+      { id_conejo:'CP_005', sexo:'HEMBRA', raza:'NZ',           id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE' },
+      { id_conejo:'CP_006', sexo:'HEMBRA', raza:'MIX',          id_padre:null, id_madre:'CP_004', estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE' },
+      { id_conejo:'CP_007', sexo:'HEMBRA', raza:'F1 (NZ*CAL)',  id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'GESTANTE_CONFIRMADA' },
+    ],
+    lotes: [
+      {
+        id_lote:'L_000', id_macho:'DESCONOCIDO', id_hembra:'CP_004',
+        fecha_monta:'2026-07-24', fecha_flushing_luminico:null,
+        resultado_palpacion:'POSITIVO',
+        nacidos_vivos:null, nacidos_muertos:null,
+        fecha_real_parto:null, fecha_real_destete:null,
+        cantidad_destetados:null, mortalidad_lactancia:null,
+        comentario:'Cruce no deseado, probable venta para carne.',
+        unidad_peso:'kg', pesajes:{ p1:{}, p2:{}, p3:{}, p4:{}, p5:{} },
+      },
+      {
+        id_lote:'L_001', id_macho:'CP_002', id_hembra:'CP_007',
+        fecha_monta:'2026-08-09', fecha_flushing_luminico:'2026-08-02',
+        resultado_palpacion:'POSITIVO',
+        nacidos_vivos:null, nacidos_muertos:null,
+        fecha_real_parto:null, fecha_real_destete:null,
+        cantidad_destetados:null, mortalidad_lactancia:null,
+        comentario:'Primer cruce planeado, F1 casi perfecto.',
+        unidad_peso:'kg', pesajes:{ p1:{}, p2:{}, p3:{}, p4:{}, p5:{} },
+      },
+      {
+        id_lote:'L_002', id_macho:'CP_002', id_hembra:'CP_006',
+        fecha_monta:'2026-09-06', fecha_flushing_luminico:'2026-08-30',
+        resultado_palpacion:'POSITIVO',
+        nacidos_vivos:null, nacidos_muertos:null,
+        fecha_real_parto:null, fecha_real_destete:null,
+        cantidad_destetados:null, mortalidad_lactancia:null,
+        comentario:'',
+        unidad_peso:'kg', pesajes:{ p1:{}, p2:{}, p3:{}, p4:{}, p5:{} },
+      },
+    ],
+  };
+}
+
+function cargarDB(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      DB = JSON.parse(raw);
+    } else {
+      DB = datosPorDefecto();
+      guardarDB();
+    }
+  }catch(e){
+    console.error('Error leyendo localStorage', e);
+    DB = datosPorDefecto();
+  }
+  DB.conejos = DB.conejos || [];
+  DB.lotes = DB.lotes || [];
+  DB.lotes.forEach(l=>{ if(!l.pesajes) l.pesajes = { p1:{}, p2:{}, p3:{}, p4:{}, p5:{} }; });
+}
+function guardarDB(){
+  localStorage.setItem(LS_KEY, JSON.stringify(DB));
+}
+
+function exportarDatos(){
+  const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cunipijaos_respaldo_' + todayStr() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Respaldo descargado');
+}
+function importarDatos(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!confirm('Esto reemplazará todos los datos actuales por los del archivo. ¿Continuar?')) return;
+      DB = { conejos: data.conejos || [], lotes: data.lotes || [] };
+      DB.lotes.forEach(l=>{ if(!l.pesajes) l.pesajes = { p1:{}, p2:{}, p3:{}, p4:{}, p5:{} }; });
+      guardarDB();
+      renderTodo();
+      toast('Datos importados correctamente');
+    }catch(err){
+      alert('El archivo no es un respaldo válido de CUNIPIJAOS.');
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+
+/* =========================================================
+   UTILIDADES DE FECHA
+   ========================================================= */
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function addDays(dateStr, days){
+  if(!dateStr) return null;
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+function fmt(dateStr){
+  if(!dateStr) return '—';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'});
+}
+function classifyDate(dateStr){
+  if(!dateStr) return null;
+  const t = todayStr();
+  if(dateStr < t) return 'atrasado';
+  if(dateStr === t) return 'hoy';
+  if(dateStr <= addDays(t,7)) return 'proximo';
+  return null;
+}
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   HELPERS DE DATOS
+   ========================================================= */
+function getConejo(id){ return DB.conejos.find(c=>c.id_conejo === id); }
+function machosActivos(){ return DB.conejos.filter(c=>c.sexo==='MACHO' && c.estado_disponibilidad==='ACTIVO'); }
+function hembrasActivas(){ return DB.conejos.filter(c=>c.sexo==='HEMBRA' && c.estado_disponibilidad==='ACTIVO'); }
+
+function checkConsanguinidad(machoId, hembraId){
+  const macho = getConejo(machoId), hembra = getConejo(hembraId);
+  if(!macho || !hembra) return false;
+  const padresM = [macho.id_padre, macho.id_madre].filter(Boolean);
+  const padresH = [hembra.id_padre, hembra.id_madre].filter(Boolean);
+  const comparten = padresM.some(id => padresH.includes(id));
+  const esDirecto = padresM.includes(hembra.id_conejo) || padresH.includes(macho.id_conejo);
+  return comparten || esDirecto;
+}
+
+function nextLoteId(){
+  const nums = DB.lotes.map(l=>{ const m = (l.id_lote||'').match(/(\d+)$/); return m ? parseInt(m[1]) : 0; });
+  const max = nums.length ? Math.max(...nums) : 0;
+  return 'L_' + String(max+1).padStart(3,'0');
+}
+
+function fechasLote(l){
+  const fPalpacion = addDays(l.fecha_monta, 14);
+  const fNido = addDays(l.fecha_monta, 28);
+  const fPartoProbable = addDays(l.fecha_monta, 31);
+  const baseParto = l.fecha_real_parto || fPartoProbable;
+  const fDesteteProgramado = l.fecha_real_parto ? addDays(l.fecha_real_parto, 35) : addDays(l.fecha_monta, 66);
+  const pesajes = {
+    p1: { n:1, label:'Destete', fecha: addDays(baseParto, 35) },
+    p2: { n:2, label:'Segregación de sexos', fecha: addDays(baseParto, 56) },
+    p3: { n:3, label:'Control post-traslado', fecha: addDays(baseParto, 70) },
+    p4: { n:4, label:'Desaceleración de crecimiento', fecha: addDays(baseParto, 84) },
+    p5: { n:5, label:'Certificación del lote', fecha: addDays(baseParto, 98) },
+  };
+  return { fPalpacion, fNido, fPartoProbable, baseParto, fDesteteProgramado, pesajes };
+}
+
+function estadoLote(l){
+  if(l.fecha_real_destete) return {label:'Destetado', color:'muted'};
+  if(l.fecha_real_parto) return {label:'En lactancia', color:'primary'};
+  if(l.resultado_palpacion === 'POSITIVO') return {label:'Gestante confirmada', color:'good'};
+  if(l.resultado_palpacion === 'NEGATIVO') return {label:'Monta fallida', color:'danger'};
+  if(l.resultado_palpacion === 'DUDOSO') return {label:'Palpación dudosa', color:'warn'};
+  return {label:'En espera de palpación', color:'muted'};
+}
+
+const ESTADOS_PRODUCTIVOS = [
+  ['LIBRE_DISPONIBLE','Libre / disponible'],
+  ['MATERNIDAD_LACTANTE','Maternidad — lactante'],
+  ['GESTANTE_CONFIRMADA','Gestante confirmada'],
+  ['REPOSO_OBLIGATORIO','Reposo obligatorio'],
+  ['EN_FLUSHING','En flushing'],
+  ['LIBRE_DESARROLLO','Libre — en desarrollo'],
+  ['BAJA_VENTA','Baja — venta'],
+];
+function labelEstadoProductivo(v){ const f = ESTADOS_PRODUCTIVOS.find(x=>x[0]===v); return f ? f[1] : v; }
+
+/* =========================================================
+   NAVEGACIÓN DE PESTAÑAS
+   ========================================================= */
+let tabActual = 'panel';
+function cambiarTab(tab){
+  tabActual = tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  ['panel','ejemplares','lotes','estadisticas'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('hidden', t!==tab);
+  });
+  if(tab==='panel') renderPanel();
+  if(tab==='ejemplares') renderEjemplares();
+  if(tab==='lotes') renderLotes();
+  if(tab==='estadisticas') renderEstadisticas();
+}
+
+function renderTodo(){
+  document.getElementById('hoyLabel').textContent = 'Hoy: ' + fmt(todayStr());
+  renderPanel();
+  renderEjemplares();
+  renderLotes();
+  renderEstadisticas();
+}
+
+/* =========================================================
+   PANEL DE TAREAS (ALERTAS)
+   ========================================================= */
+function generarAlertas(){
+  const out = { palpacion:[], nido:[], parto:[], destete:[], pesaje:[] };
+  DB.lotes.forEach(l=>{
+    const f = fechasLote(l);
+
+    if(!l.resultado_palpacion || l.resultado_palpacion==='PENDIENTE'){
+      const cls = classifyDate(f.fPalpacion);
+      if(cls) out.palpacion.push({lote:l, fecha:f.fPalpacion, cls});
+    }
+    if(l.resultado_palpacion !== 'NEGATIVO' && !l.fecha_real_parto){
+      let cls = classifyDate(f.fNido);
+      if(cls) out.nido.push({lote:l, fecha:f.fNido, cls});
+      cls = classifyDate(f.fPartoProbable);
+      if(cls) out.parto.push({lote:l, fecha:f.fPartoProbable, cls});
+    }
+    if(l.fecha_real_parto && !l.fecha_real_destete){
+      const cls = classifyDate(f.fDesteteProgramado);
+      if(cls) out.destete.push({lote:l, fecha:f.fDesteteProgramado, cls});
+    }
+    Object.values(f.pesajes).forEach(p=>{
+      const registro = l.pesajes[('p'+p.n)] || {};
+      const hecho = registro.cantidad || registro.peso;
+      if(!hecho){
+        const cls = classifyDate(p.fecha);
+        if(cls) out.pesaje.push({lote:l, fecha:p.fecha, cls, n:p.n, label:p.label});
+      }
+    });
+  });
+  Object.values(out).forEach(arr=>arr.sort((a,b)=>a.fecha.localeCompare(b.fecha)));
+  return out;
+}
+
+function filaAlerta(texto, item){
+  return `
+    <div class="alert-row ${item.cls}">
+      <div class="flex-1">
+        <div class="text-sm">${texto}</div>
+        <div class="text-xs" style="color:var(--muted)">Lote <span class="mono">${item.lote.id_lote}</span> · ${fmt(item.fecha)} ${item.cls==='atrasado' ? '· atrasado' : (item.cls==='hoy' ? '· hoy' : '· próximos días')}</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="irALote('${item.lote.id_lote}')">Ver lote</button>
+    </div>`;
+}
+
+function bloqueAlertas(titulo, items, renderTexto){
+  const cuerpo = items.length
+    ? items.map(it=>filaAlerta(renderTexto(it), it)).join('')
+    : `<div class="text-sm" style="color:var(--muted)">Sin pendientes por ahora.</div>`;
+  return `
+    <div class="mb-6">
+      <h3 class="text-base font-semibold mb-2" style="color:var(--primary-dark)">${titulo} ${items.length ? `<span class="text-xs font-normal" style="color:var(--muted)">(${items.length})</span>` : ''}</h3>
+      ${cuerpo}
+    </div>`;
+}
+
+function renderPanel(){
+  const a = generarAlertas();
+  const s = statsGlobales();
+  const kpis = [
+    ['Machos activos', s.machosActivos],
+    ['Hembras activas', s.hembrasActivas],
+    ['Lotes en curso', s.lotesEnCurso],
+    ['Total de lotes', s.totalLotes],
+  ];
+  const kpiHtml = `
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      ${kpis.map(([label,val])=>`
+        <div class="rounded-md border p-3" style="border-color:var(--border); background:var(--surface-2)">
+          <div class="text-2xl font-display" style="color:var(--primary-dark)">${val}</div>
+          <div class="text-xs" style="color:var(--muted)">${label}</div>
+        </div>`).join('')}
+    </div>`;
+  const html = `
+    <h2 class="font-display text-2xl mb-1">Panel de tareas</h2>
+    <p class="text-sm mb-4" style="color:var(--muted)">Pendientes de hoy y de los próximos 7 días, y todo lo que quedó atrasado.</p>
+    ${kpiHtml}
+    ${bloqueAlertas('Palpaciones pendientes', a.palpacion, it=>`Palpar a la hembra del lote (día 14 tras la monta).`)}
+    ${bloqueAlertas('Poner nido', a.nido, it=>`Instalar nidal para el parto próximo (día 28 tras la monta).`)}
+    ${bloqueAlertas('Partos esperados', a.parto, it=>`Parto probable de este lote (día 31 tras la monta).`)}
+    ${bloqueAlertas('Destetes', a.destete, it=>`Destete programado del lote.`)}
+    ${bloqueAlertas('Pesajes', a.pesaje, it=>`Pesaje ${it.n} — ${it.label}.`)}
+  `;
+  document.getElementById('tab-panel').innerHTML = html;
+}
+
+function irALote(id){
+  cambiarTab('lotes');
+  setTimeout(()=>abrirDetalleLote(id), 30);
+}
+
+/* =========================================================
+   EJEMPLARES (BANCO DE REPRODUCTORES)
+   ========================================================= */
+let filtroEjemplares = { sexo:'', disp:'', prod:'', q:'' };
+
+function renderEjemplares(){
+  const conejos = DB.conejos.filter(c=>{
+    if(filtroEjemplares.sexo && c.sexo!==filtroEjemplares.sexo) return false;
+    if(filtroEjemplares.disp && c.estado_disponibilidad!==filtroEjemplares.disp) return false;
+    if(filtroEjemplares.prod && c.estado_productivo!==filtroEjemplares.prod) return false;
+    if(filtroEjemplares.q && !c.id_conejo.toLowerCase().includes(filtroEjemplares.q.toLowerCase())) return false;
+    return true;
+  });
+
+  const filas = conejos.map(c=>`
+    <tr>
+      <td class="id-cell">${c.id_conejo}</td>
+      <td>${c.sexo === 'MACHO' ? 'Macho' : 'Hembra'}</td>
+      <td>${c.raza || '—'}</td>
+      <td class="id-cell text-xs">${c.id_padre || '—'}</td>
+      <td class="id-cell text-xs">${c.id_madre || '—'}</td>
+      <td>
+        <span class="badge ${c.estado_disponibilidad==='ACTIVO' ? 'b-good' : 'b-muted'}"><span class="dot"></span>${c.estado_disponibilidad==='ACTIVO'?'Activo':'Baja'}</span>
+      </td>
+      <td>
+        <span class="badge b-primary"><span class="dot"></span>${labelEstadoProductivo(c.estado_productivo)}</span>
+      </td>
+      <td class="whitespace-nowrap">
+        <button class="btn btn-outline btn-sm" onclick="abrirFichaConejo('${c.id_conejo}')">Ficha</button>
+        <button class="btn btn-outline btn-sm" onclick="abrirFormConejo('${c.id_conejo}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarConejo('${c.id_conejo}')">Eliminar</button>
+      </td>
+    </tr>`).join('');
+
+  const html = `
+    <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+      <h2 class="font-display text-2xl">Banco de ejemplares</h2>
+      <div class="flex gap-2">
+        <button class="btn btn-outline" onclick="exportarConejosCSV()">Exportar CSV</button>
+        <button class="btn btn-primary" onclick="abrirFormConejo()">Nuevo ejemplar</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+      <div>
+        <label>Sexo</label>
+        <select onchange="filtroEjemplares.sexo=this.value; renderEjemplares()">
+          <option value="">Todos</option>
+          <option value="MACHO" ${filtroEjemplares.sexo==='MACHO'?'selected':''}>Macho</option>
+          <option value="HEMBRA" ${filtroEjemplares.sexo==='HEMBRA'?'selected':''}>Hembra</option>
+        </select>
+      </div>
+      <div>
+        <label>Disponibilidad</label>
+        <select onchange="filtroEjemplares.disp=this.value; renderEjemplares()">
+          <option value="">Todas</option>
+          <option value="ACTIVO" ${filtroEjemplares.disp==='ACTIVO'?'selected':''}>Activo</option>
+          <option value="BAJA" ${filtroEjemplares.disp==='BAJA'?'selected':''}>Baja</option>
+        </select>
+      </div>
+      <div>
+        <label>Estado productivo</label>
+        <select onchange="filtroEjemplares.prod=this.value; renderEjemplares()">
+          <option value="">Todos</option>
+          ${ESTADOS_PRODUCTIVOS.map(([v,l])=>`<option value="${v}" ${filtroEjemplares.prod===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label>Buscar por ID</label>
+        <input type="text" placeholder="CP_001" value="${filtroEjemplares.q}" oninput="filtroEjemplares.q=this.value; renderEjemplares()">
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table>
+        <thead><tr>
+          <th>ID</th><th>Sexo</th><th>Raza</th><th>Padre</th><th>Madre</th><th>Disponibilidad</th><th>Estado productivo</th><th></th>
+        </tr></thead>
+        <tbody>
+          ${filas || `<tr><td colspan="8" class="text-center py-6" style="color:var(--muted)">No hay ejemplares registrados con estos filtros.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('tab-ejemplares').innerHTML = html;
+}
+
+function abrirFormConejo(id){
+  const editando = !!id;
+  const c = editando ? getConejo(id) : { estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DESARROLLO', sexo:'HEMBRA' };
+  const razas = [...new Set(DB.conejos.map(x=>x.raza).filter(Boolean))];
+
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+      <div class="modal-box">
+        <h3 class="font-display text-xl mb-4">${editando ? 'Editar ejemplar' : 'Nuevo ejemplar'}</h3>
+        <div class="grid sm:grid-cols-2 gap-x-4">
+          <div class="field">
+            <label>ID del conejo *</label>
+            <input id="f_id" type="text" placeholder="CP_004" value="${c.id_conejo||''}" ${editando?'disabled':''}>
+          </div>
+          <div class="field">
+            <label>Sexo *</label>
+            <select id="f_sexo">
+              <option value="MACHO" ${c.sexo==='MACHO'?'selected':''}>Macho</option>
+              <option value="HEMBRA" ${c.sexo==='HEMBRA'?'selected':''}>Hembra</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Raza</label>
+            <input id="f_raza" list="listaRazas" type="text" placeholder="CAL*NZ, MIX, F1..." value="${c.raza||''}">
+            <datalist id="listaRazas">${razas.map(r=>`<option value="${r}">`).join('')}</datalist>
+          </div>
+          <div class="field">
+            <label>Disponibilidad *</label>
+            <select id="f_disp">
+              <option value="ACTIVO" ${c.estado_disponibilidad==='ACTIVO'?'selected':''}>Activo</option>
+              <option value="BAJA" ${c.estado_disponibilidad==='BAJA'?'selected':''}>Baja</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>ID del padre</label>
+            <select id="f_padre">
+              <option value="">— Ninguno / externo —</option>
+              ${DB.conejos.filter(x=>x.sexo==='MACHO' && x.id_conejo!==id).map(m=>`<option value="${m.id_conejo}" ${c.id_padre===m.id_conejo?'selected':''}>${m.id_conejo}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>ID de la madre</label>
+            <select id="f_madre">
+              <option value="">— Ninguna / externa —</option>
+              ${DB.conejos.filter(x=>x.sexo==='HEMBRA' && x.id_conejo!==id).map(m=>`<option value="${m.id_conejo}" ${c.id_madre===m.id_conejo?'selected':''}>${m.id_conejo}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field sm:col-span-2">
+            <label>Estado productivo *</label>
+            <select id="f_prod">
+              ${ESTADOS_PRODUCTIVOS.map(([v,l])=>`<option value="${v}" ${c.estado_productivo===v?'selected':''}>${l}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-between items-center mt-2">
+          <div>
+            ${editando ? `<button class="btn btn-danger" onclick="eliminarConejo('${id}')">Eliminar</button>` : ''}
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarConejo(${editando ? `'${id}'` : 'null'})">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalRoot').innerHTML = html;
+}
+
+function guardarConejo(idOriginal){
+  const id = idOriginal || document.getElementById('f_id').value.trim();
+  if(!id){ alert('El ID del conejo es obligatorio.'); return; }
+  if(!idOriginal && getConejo(id)){ alert('Ya existe un ejemplar con ese ID.'); return; }
+
+  const datos = {
+    id_conejo: id,
+    sexo: document.getElementById('f_sexo').value,
+    raza: document.getElementById('f_raza').value.trim(),
+    id_padre: document.getElementById('f_padre').value || null,
+    id_madre: document.getElementById('f_madre').value || null,
+    estado_disponibilidad: document.getElementById('f_disp').value,
+    estado_productivo: document.getElementById('f_prod').value,
+  };
+
+  if(idOriginal){
+    const idx = DB.conejos.findIndex(c=>c.id_conejo===idOriginal);
+    DB.conejos[idx] = { ...DB.conejos[idx], ...datos };
+  } else {
+    DB.conejos.push(datos);
+  }
+  guardarDB();
+  cerrarModal();
+  renderEjemplares();
+  renderPanel();
+  toast('Ejemplar guardado');
+}
+
+function eliminarConejo(id){
+  if(!confirm('¿Eliminar el ejemplar ' + id + '? Esta acción no se puede deshacer.')) return;
+  DB.conejos = DB.conejos.filter(c=>c.id_conejo!==id);
+  guardarDB();
+  cerrarModal();
+  renderEjemplares();
+  toast('Ejemplar eliminado');
+}
+
+/* =========================================================
+   CICLOS PRODUCTIVOS (LOTES)
+   ========================================================= */
+function renderLotes(){
+  const filas = DB.lotes.map(l=>{
+    const est = estadoLote(l);
+    const f = fechasLote(l);
+    const alerta = checkConsanguinidad(l.id_macho, l.id_hembra);
+    return `
+      <tr>
+        <td class="id-cell">${l.id_lote}</td>
+        <td class="id-cell text-xs">${l.id_macho}</td>
+        <td class="id-cell text-xs">${l.id_hembra}</td>
+        <td>${fmt(l.fecha_monta)}</td>
+        <td><span class="badge b-${est.color}"><span class="dot"></span>${est.label}</span></td>
+        <td>${l.fecha_real_parto ? fmt(l.fecha_real_parto) : fmt(f.fPartoProbable) + ' (prob.)'}</td>
+        <td>${alerta ? '<span class="badge b-danger"><span class="dot"></span>Consanguinidad</span>' : ''}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="abrirDetalleLote('${l.id_lote}')">Ver / editar</button></td>
+      </tr>`;
+  }).join('');
+
+  const html = `
+    <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+      <h2 class="font-display text-2xl">Ciclos productivos</h2>
+      <div class="flex gap-2">
+        <button class="btn btn-outline" onclick="exportarLotesCSV()">Exportar CSV</button>
+        <button class="btn btn-primary" onclick="abrirFormLote()">Nueva monta</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table>
+        <thead><tr>
+          <th>Lote</th><th>Macho</th><th>Hembra</th><th>Fecha monta</th><th>Estado</th><th>Parto</th><th>Alerta</th><th></th>
+        </tr></thead>
+        <tbody>
+          ${filas || `<tr><td colspan="8" class="text-center py-6" style="color:var(--muted)">Aún no hay lotes registrados.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('tab-lotes').innerHTML = html;
+}
+
+function abrirFormLote(){
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+      <div class="modal-box">
+        <h3 class="font-display text-xl mb-4">Nueva monta</h3>
+        <div id="consanguinidadAviso"></div>
+        <div class="grid sm:grid-cols-2 gap-x-4">
+          <div class="field">
+            <label>ID de lote *</label>
+            <input id="fl_id" type="text" value="${nextLoteId()}">
+          </div>
+          <div class="field"></div>
+          <div class="field">
+            <label>Macho *</label>
+            <select id="fl_macho" onchange="revisarAvisosForm()">
+              <option value="">Seleccionar...</option>
+              ${machosActivos().map(m=>`<option value="${m.id_conejo}">${m.id_conejo}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Hembra *</label>
+            <select id="fl_hembra" onchange="revisarAvisosForm()">
+              <option value="">Seleccionar...</option>
+              ${hembrasActivas().map(m=>`<option value="${m.id_conejo}">${m.id_conejo}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Fecha de monta *</label>
+            <input id="fl_fmonta" type="date" value="${todayStr()}">
+          </div>
+          <div class="field">
+            <label>Fecha de flushing lumínico</label>
+            <input id="fl_fflushing" type="date">
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-2">
+          <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="guardarLoteNuevo()">Guardar</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalRoot').innerHTML = html;
+}
+
+function loteAbiertoDeHembra(hembraId, excluirLoteId){
+  return DB.lotes.find(l=> l.id_hembra===hembraId && l.id_lote!==excluirLoteId && !l.fecha_real_destete && l.resultado_palpacion!=='NEGATIVO');
+}
+
+function revisarAvisosForm(){
+  const macho = document.getElementById('fl_macho').value;
+  const hembra = document.getElementById('fl_hembra').value;
+  const el = document.getElementById('consanguinidadAviso');
+  let avisos = '';
+  if(macho && hembra && checkConsanguinidad(macho, hembra)){
+    avisos += `<div class="warn-banner">⚠ <div><strong>Alerta de consanguinidad / cruce no deseado.</strong> Este macho y esta hembra comparten un progenitor o tienen relación directa de parentesco.</div></div>`;
+  }
+  if(hembra){
+    const abierto = loteAbiertoDeHembra(hembra, null);
+    if(abierto){
+      avisos += `<div class="warn-banner">⚠ <div><strong>Ciclo abierto detectado.</strong> La hembra ${hembra} ya tiene un ciclo sin destetar en el lote <span class="mono">${abierto.id_lote}</span>. Verifica que no sea un duplicado.</div></div>`;
+    }
+  }
+  el.innerHTML = avisos;
+}
+
+function guardarLoteNuevo(){
+  const id = document.getElementById('fl_id').value.trim();
+  const macho = document.getElementById('fl_macho').value;
+  const hembra = document.getElementById('fl_hembra').value;
+  const fmonta = document.getElementById('fl_fmonta').value;
+  const fflushing = document.getElementById('fl_fflushing').value;
+
+  if(!id || !macho || !hembra || !fmonta){ alert('Completa lote, macho, hembra y fecha de monta.'); return; }
+  if(DB.lotes.find(l=>l.id_lote===id)){ alert('Ya existe un lote con ese ID.'); return; }
+
+  DB.lotes.push({
+    id_lote: id, id_macho: macho, id_hembra: hembra,
+    fecha_monta: fmonta, fecha_flushing_luminico: fflushing || null,
+    resultado_palpacion: 'PENDIENTE',
+    nacidos_vivos: null, nacidos_muertos: null,
+    fecha_real_parto: null, fecha_real_destete: null,
+    cantidad_destetados: null, mortalidad_lactancia: null,
+    comentario: '', unidad_peso: 'kg',
+    pesajes: { p1:{}, p2:{}, p3:{}, p4:{}, p5:{} },
+  });
+  guardarDB();
+  cerrarModal();
+  renderLotes();
+  renderPanel();
+  toast('Lote creado');
+}
+
+function abrirDetalleLote(id){
+  const l = DB.lotes.find(x=>x.id_lote===id);
+  if(!l) return;
+  const f = fechasLote(l);
+  const alertaCons = checkConsanguinidad(l.id_macho, l.id_hembra);
+  const unidad = l.unidad_peso || 'kg';
+
+  const filaPesaje = (key, def)=>{
+    const reg = l.pesajes[key] || {};
+    const vencida = classifyDate(def.fecha);
+    const hecho = reg.cantidad || reg.peso;
+    return `
+      <tr>
+        <td>Pesaje ${def.n} — ${def.label}</td>
+        <td>${fmt(def.fecha)}</td>
+        <td><input type="number" min="0" id="pw_cant_${key}" value="${reg.cantidad ?? ''}" placeholder="animales"></td>
+        <td><input type="number" min="0" step="0.01" id="pw_peso_${key}" value="${reg.peso ?? ''}" placeholder="peso total (${unidad})"></td>
+        <td>${hecho ? '<span class="badge b-good"><span class="dot"></span>Completado</span>' : (vencida==='atrasado' ? '<span class="badge b-danger"><span class="dot"></span>Atrasado</span>' : '<span class="badge b-muted"><span class="dot"></span>Pendiente</span>')}</td>
+      </tr>`;
+  };
+
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+      <div class="modal-box wide">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h3 class="font-display text-xl">Lote <span class="mono">${l.id_lote}</span></h3>
+            <p class="text-sm" style="color:var(--muted)">${l.id_macho} × ${l.id_hembra}</p>
+          </div>
+          <span class="badge b-${estadoLote(l).color}"><span class="dot"></span>${estadoLote(l).label}</span>
+        </div>
+
+        ${alertaCons ? `<div class="warn-banner mt-3">⚠ <div><strong>Alerta de consanguinidad / cruce no deseado.</strong> Verifica el árbol genealógico de estos ejemplares antes de continuar con este lote.</div></div>` : ''}
+
+        <div class="section-title">Fechas clave</div>
+        <div class="grid sm:grid-cols-2 gap-x-4">
+          <div class="field">
+            <label>Fecha de monta</label>
+            <input id="d_fmonta" type="date" value="${l.fecha_monta||''}">
+          </div>
+          <div class="field">
+            <label>Fecha de flushing lumínico</label>
+            <input id="d_fflushing" type="date" value="${l.fecha_flushing_luminico||''}">
+          </div>
+          <div class="field">
+            <label>Fecha de palpación (calculada)</label>
+            <div class="readonly-pill">${fmt(f.fPalpacion)}</div>
+          </div>
+          <div class="field">
+            <label>Resultado de palpación</label>
+            <select id="d_palpacion">
+              <option value="PENDIENTE" ${l.resultado_palpacion==='PENDIENTE'?'selected':''}>Pendiente</option>
+              <option value="POSITIVO" ${l.resultado_palpacion==='POSITIVO'?'selected':''}>Positivo</option>
+              <option value="NEGATIVO" ${l.resultado_palpacion==='NEGATIVO'?'selected':''}>Negativo</option>
+              <option value="DUDOSO" ${l.resultado_palpacion==='DUDOSO'?'selected':''}>Dudoso</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fecha para poner nido (calculada)</label>
+            <div class="readonly-pill">${fmt(f.fNido)}</div>
+          </div>
+          <div class="field">
+            <label>Fecha probable de parto (calculada)</label>
+            <div class="readonly-pill">${fmt(f.fPartoProbable)}</div>
+          </div>
+        </div>
+
+        <div class="section-title">Parto y destete</div>
+        <div class="grid sm:grid-cols-2 gap-x-4">
+          <div class="field">
+            <label>Fecha real de parto</label>
+            <input id="d_fparto" type="date" value="${l.fecha_real_parto||''}">
+          </div>
+          <div class="field">
+            <label>Fecha programada de destete (calculada)</label>
+            <div class="readonly-pill">${fmt(f.fDesteteProgramado)}</div>
+          </div>
+          <div class="field">
+            <label>Nacidos vivos</label>
+            <input id="d_nvivos" type="number" min="0" value="${l.nacidos_vivos ?? ''}">
+          </div>
+          <div class="field">
+            <label>Nacidos muertos</label>
+            <input id="d_nmuertos" type="number" min="0" value="${l.nacidos_muertos ?? ''}">
+          </div>
+          <div class="field">
+            <label>Fecha real de destete</label>
+            <input id="d_fdestete" type="date" value="${l.fecha_real_destete||''}">
+          </div>
+          <div class="field">
+            <label>Cantidad destetados</label>
+            <input id="d_destetados" type="number" min="0" value="${l.cantidad_destetados ?? ''}">
+          </div>
+          <div class="field">
+            <label>Mortalidad en lactancia</label>
+            <input id="d_mortalidad" type="number" min="0" value="${l.mortalidad_lactancia ?? ''}">
+          </div>
+          <div class="field">
+            <label>Unidad de peso para pesajes</label>
+            <select id="d_unidad">
+              <option value="kg" ${unidad==='kg'?'selected':''}>Kilogramos (kg)</option>
+              <option value="lb" ${unidad==='lb'?'selected':''}>Libras (lb)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Comentario</label>
+          <textarea id="d_comentario" rows="2">${l.comentario||''}</textarea>
+        </div>
+
+        <div class="section-title">Calendario de pesajes</div>
+        <div class="overflow-x-auto">
+          <table>
+            <thead><tr><th>Pesaje</th><th>Fecha objetivo</th><th>Cantidad</th><th>Peso total</th><th>Estado</th></tr></thead>
+            <tbody>
+              ${filaPesaje('p1', f.pesajes.p1)}
+              ${filaPesaje('p2', f.pesajes.p2)}
+              ${filaPesaje('p3', f.pesajes.p3)}
+              ${filaPesaje('p4', f.pesajes.p4)}
+              ${filaPesaje('p5', f.pesajes.p5)}
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs mt-1" style="color:var(--muted)">Las fechas de pesaje se calculan desde el parto real; si aún no se registra, se estiman desde el parto probable.</p>
+
+        <div class="flex justify-between items-center mt-5">
+          <button class="btn btn-danger" onclick="eliminarLote('${l.id_lote}')">Eliminar lote</button>
+          <div class="flex gap-2">
+            <button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="guardarDetalleLote('${l.id_lote}')">Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalRoot').innerHTML = html;
+}
+
+function guardarDetalleLote(id){
+  const l = DB.lotes.find(x=>x.id_lote===id);
+  if(!l) return;
+
+  const val = (elId)=> document.getElementById(elId).value;
+  const numOrNull = (v)=> v===''? null : Number(v);
+
+  l.fecha_monta = val('d_fmonta') || l.fecha_monta;
+  l.fecha_flushing_luminico = val('d_fflushing') || null;
+  l.resultado_palpacion = val('d_palpacion');
+  l.fecha_real_parto = val('d_fparto') || null;
+  l.nacidos_vivos = numOrNull(val('d_nvivos'));
+  l.nacidos_muertos = numOrNull(val('d_nmuertos'));
+  l.fecha_real_destete = val('d_fdestete') || null;
+  l.cantidad_destetados = numOrNull(val('d_destetados'));
+  l.mortalidad_lactancia = numOrNull(val('d_mortalidad'));
+  l.comentario = val('d_comentario');
+  l.unidad_peso = val('d_unidad');
+
+  ['p1','p2','p3','p4','p5'].forEach(key=>{
+    const cant = document.getElementById('pw_cant_'+key).value;
+    const peso = document.getElementById('pw_peso_'+key).value;
+    l.pesajes[key] = { cantidad: cant===''?null:Number(cant), peso: peso===''?null:Number(peso) };
+  });
+
+  // Automatización suave del estado productivo de la hembra
+  const hembra = getConejo(l.id_hembra);
+  if(hembra){
+    if(l.fecha_real_destete) hembra.estado_productivo = 'REPOSO_OBLIGATORIO';
+    else if(l.fecha_real_parto) hembra.estado_productivo = 'MATERNIDAD_LACTANTE';
+    else if(l.resultado_palpacion === 'POSITIVO') hembra.estado_productivo = 'GESTANTE_CONFIRMADA';
+  }
+
+  guardarDB();
+  cerrarModal();
+  renderLotes();
+  renderPanel();
+  renderEjemplares();
+  toast('Lote actualizado');
+}
+
+function eliminarLote(id){
+  if(!confirm('¿Eliminar el lote ' + id + '? Esta acción no se puede deshacer.')) return;
+  DB.lotes = DB.lotes.filter(l=>l.id_lote!==id);
+  guardarDB();
+  cerrarModal();
+  renderLotes();
+  renderPanel();
+  toast('Lote eliminado');
+}
+
+/* =========================================================
+   ESTADÍSTICAS Y DESEMPEÑO
+   ========================================================= */
+function promedio(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null; }
+function pesoPromedioAnimal(reg){ if(!reg || !reg.cantidad || !reg.peso) return null; return reg.peso/reg.cantidad; }
+function n1(v){ return v===null || v===undefined || isNaN(v) ? '—' : v.toFixed(1); }
+
+function statsGlobales(){
+  const lotesConParto = DB.lotes.filter(l=>l.fecha_real_parto);
+  const lotesConDestete = DB.lotes.filter(l=>l.fecha_real_destete);
+
+  const promVivos = promedio(lotesConParto.map(l=>l.nacidos_vivos||0));
+  const promMuertos = promedio(lotesConParto.map(l=>l.nacidos_muertos||0));
+  const promDestetados = promedio(lotesConDestete.map(l=>l.cantidad_destetados||0));
+
+  let totalVivos=0, totalMort=0, totalDestetados=0;
+  lotesConDestete.forEach(l=>{ totalVivos += l.nacidos_vivos||0; totalMort += l.mortalidad_lactancia||0; totalDestetados += l.cantidad_destetados||0; });
+  const tasaMortalidad = totalVivos ? (totalMort/totalVivos*100) : null;
+  const tasaDestete = totalVivos ? (totalDestetados/totalVivos*100) : null;
+
+  const pesajesProm = {};
+  ['p1','p2','p3','p4','p5'].forEach(key=>{
+    const valores = DB.lotes.map(l=>pesoPromedioAnimal(l.pesajes[key])).filter(v=>v!=null);
+    pesajesProm[key] = promedio(valores);
+  });
+
+  return {
+    promVivos, promMuertos, promDestetados, tasaMortalidad, tasaDestete, pesajesProm,
+    totalLotes: DB.lotes.length,
+    lotesEnCurso: DB.lotes.filter(l=>!l.fecha_real_destete && l.resultado_palpacion!=='NEGATIVO').length,
+    machosActivos: machosActivos().length,
+    hembrasActivas: hembrasActivas().length,
+  };
+}
+
+function statsReproductor(id, rolCampo){
+  const lotes = DB.lotes.filter(l=> l[rolCampo] === id);
+  const conParto = lotes.filter(l=>l.fecha_real_parto);
+  const conDestete = lotes.filter(l=>l.fecha_real_destete);
+  let vivosAcum=0, mortAcum=0;
+  conDestete.forEach(l=>{ vivosAcum += l.nacidos_vivos||0; mortAcum += l.mortalidad_lactancia||0; });
+  return {
+    totalLotes: lotes.length,
+    promVivos: promedio(conParto.map(l=>l.nacidos_vivos||0)),
+    promDestetados: promedio(conDestete.map(l=>l.cantidad_destetados||0)),
+    mortalidadPct: vivosAcum ? (mortAcum/vivosAcum*100) : null,
+    lotes,
+  };
+}
+
+function barraHtml(label, valor, max, sufijo){
+  const pct = (valor!=null && max) ? Math.max(4, (valor/max*100)) : 0;
+  return `
+    <div class="mb-2">
+      <div class="flex justify-between text-xs mb-1"><span style="color:var(--muted)">${label}</span><span class="mono">${valor!=null ? n1(valor)+sufijo : 'Sin datos'}</span></div>
+      <div style="background:var(--surface-2); border:1px solid var(--border); border-radius:4px; height:10px;">
+        <div style="width:${pct}%; background:var(--primary); height:100%; border-radius:4px;"></div>
+      </div>
+    </div>`;
+}
+
+function renderEstadisticas(){
+  const s = statsGlobales();
+  const maxPeso = Math.max(0, ...Object.values(s.pesajesProm).filter(v=>v!=null));
+
+  const hembras = DB.conejos.filter(c=>c.sexo==='HEMBRA' && DB.lotes.some(l=>l.id_hembra===c.id_conejo));
+  const machos = DB.conejos.filter(c=>c.sexo==='MACHO' && DB.lotes.some(l=>l.id_macho===c.id_conejo));
+
+  const filaReproductor = (c, rolCampo) => {
+    const st = statsReproductor(c.id_conejo, rolCampo);
+    return `
+      <tr>
+        <td class="id-cell">${c.id_conejo}</td>
+        <td>${st.totalLotes}</td>
+        <td>${n1(st.promVivos)}</td>
+        <td>${n1(st.promDestetados)}</td>
+        <td>${st.mortalidadPct!=null ? n1(st.mortalidadPct)+'%' : '—'}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="abrirFichaConejo('${c.id_conejo}')">Ver ficha</button></td>
+      </tr>`;
+  };
+
+  const tablaHembras = hembras
+    .map(c=>({c, st:statsReproductor(c.id_conejo,'id_hembra')}))
+    .sort((a,b)=> (b.st.promDestetados||0)-(a.st.promDestetados||0))
+    .map(x=>filaReproductor(x.c,'id_hembra')).join('');
+
+  const tablaMachos = machos
+    .map(c=>({c, st:statsReproductor(c.id_conejo,'id_macho')}))
+    .sort((a,b)=> (b.st.promVivos||0)-(a.st.promVivos||0))
+    .map(x=>filaReproductor(x.c,'id_macho')).join('');
+
+  const html = `
+    <h2 class="font-display text-2xl mb-1">Estadísticas y desempeño</h2>
+    <p class="text-sm mb-6" style="color:var(--muted)">Indicadores calculados a partir de los lotes registrados. Sirven de referencia para decidir qué reproductores mantener.</p>
+
+    <div class="grid sm:grid-cols-3 gap-4 mb-6">
+      <div class="rounded-md border p-3" style="border-color:var(--border)">
+        <div class="text-xs mb-1" style="color:var(--muted)">Promedio nacidos vivos / parto</div>
+        <div class="text-xl font-display" style="color:var(--primary-dark)">${n1(s.promVivos)}</div>
+      </div>
+      <div class="rounded-md border p-3" style="border-color:var(--border)">
+        <div class="text-xs mb-1" style="color:var(--muted)">Tasa de destete</div>
+        <div class="text-xl font-display" style="color:var(--primary-dark)">${s.tasaDestete!=null ? n1(s.tasaDestete)+'%' : '—'}</div>
+      </div>
+      <div class="rounded-md border p-3" style="border-color:var(--border)">
+        <div class="text-xs mb-1" style="color:var(--muted)">Mortalidad en lactancia</div>
+        <div class="text-xl font-display" style="color:var(--primary-dark)">${s.tasaMortalidad!=null ? n1(s.tasaMortalidad)+'%' : '—'}</div>
+      </div>
+    </div>
+
+    <div class="section-title">Peso promedio por animal en cada pesaje</div>
+    ${barraHtml('Pesaje 1 — Destete', s.pesajesProm.p1, maxPeso, '')}
+    ${barraHtml('Pesaje 2 — Segregación de sexos', s.pesajesProm.p2, maxPeso, '')}
+    ${barraHtml('Pesaje 3 — Control post-traslado', s.pesajesProm.p3, maxPeso, '')}
+    ${barraHtml('Pesaje 4 — Desaceleración de crecimiento', s.pesajesProm.p4, maxPeso, '')}
+    ${barraHtml('Pesaje 5 — Certificación del lote', s.pesajesProm.p5, maxPeso, '')}
+
+    <div class="section-title">Desempeño de hembras reproductoras</div>
+    <div class="overflow-x-auto mb-6">
+      <table>
+        <thead><tr><th>ID</th><th>Lotes</th><th>Prom. nacidos vivos</th><th>Prom. destetados</th><th>Mortalidad lactancia</th><th></th></tr></thead>
+        <tbody>${tablaHembras || `<tr><td colspan="6" class="text-center py-6" style="color:var(--muted)">Aún no hay hembras con lotes registrados.</td></tr>`}</tbody>
+      </table>
+    </div>
+
+    <div class="section-title">Desempeño de machos reproductores</div>
+    <div class="overflow-x-auto">
+      <table>
+        <thead><tr><th>ID</th><th>Lotes</th><th>Prom. nacidos vivos</th><th>Prom. destetados</th><th>Mortalidad lactancia</th><th></th></tr></thead>
+        <tbody>${tablaMachos || `<tr><td colspan="6" class="text-center py-6" style="color:var(--muted)">Aún no hay machos con lotes registrados.</td></tr>`}</tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('tab-estadisticas').innerHTML = html;
+}
+
+function abrirFichaConejo(id){
+  const c = getConejo(id);
+  if(!c) return;
+  const rolCampo = c.sexo==='MACHO' ? 'id_macho' : 'id_hembra';
+  const st = statsReproductor(id, rolCampo);
+  const filasHistorial = st.lotes
+    .slice().sort((a,b)=> (a.fecha_monta||'').localeCompare(b.fecha_monta||''))
+    .map(l=>`
+      <tr>
+        <td class="id-cell">${l.id_lote}</td>
+        <td>${fmt(l.fecha_monta)}</td>
+        <td>${l.resultado_palpacion || '—'}</td>
+        <td>${l.nacidos_vivos ?? '—'}</td>
+        <td>${l.cantidad_destetados ?? '—'}</td>
+      </tr>`).join('');
+
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+      <div class="modal-box">
+        <h3 class="font-display text-xl mb-1">Ficha de ${c.id_conejo}</h3>
+        <p class="text-sm mb-4" style="color:var(--muted)">${c.sexo==='MACHO'?'Macho':'Hembra'} · ${c.raza||'Raza no registrada'} · ${labelEstadoProductivo(c.estado_productivo)}</p>
+
+        <div class="grid sm:grid-cols-3 gap-3 mb-5">
+          <div class="rounded-md border p-3" style="border-color:var(--border)">
+            <div class="text-xs" style="color:var(--muted)">Lotes participados</div>
+            <div class="text-lg font-display" style="color:var(--primary-dark)">${st.totalLotes}</div>
+          </div>
+          <div class="rounded-md border p-3" style="border-color:var(--border)">
+            <div class="text-xs" style="color:var(--muted)">Prom. nacidos vivos</div>
+            <div class="text-lg font-display" style="color:var(--primary-dark)">${n1(st.promVivos)}</div>
+          </div>
+          <div class="rounded-md border p-3" style="border-color:var(--border)">
+            <div class="text-xs" style="color:var(--muted)">Prom. destetados</div>
+            <div class="text-lg font-display" style="color:var(--primary-dark)">${n1(st.promDestetados)}</div>
+          </div>
+        </div>
+
+        <div class="section-title">Historial de lotes</div>
+        <div class="overflow-x-auto">
+          <table>
+            <thead><tr><th>Lote</th><th>Monta</th><th>Palpación</th><th>Nacidos vivos</th><th>Destetados</th></tr></thead>
+            <tbody>${filasHistorial || `<tr><td colspan="5" class="text-center py-4" style="color:var(--muted)">Sin lotes registrados aún.</td></tr>`}</tbody>
+          </table>
+        </div>
+
+        <div class="flex justify-end gap-2 mt-5">
+          <button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button>
+          <button class="btn btn-primary" onclick="abrirFormConejo('${c.id_conejo}')">Editar ejemplar</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalRoot').innerHTML = html;
+}
+
+/* =========================================================
+   EXPORTACIÓN A CSV
+   ========================================================= */
+function toCSV(rows, headers){
+  const esc = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+  const lines = [headers.map(h=>esc(h.label)).join(',')];
+  rows.forEach(r=> lines.push(headers.map(h=>esc(h.get(r))).join(',')));
+  return lines.join('\n');
+}
+function descargarCSV(nombre, contenido){
+  const blob = new Blob(['\ufeff'+contenido], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre; a.click();
+  URL.revokeObjectURL(url);
+}
+function exportarConejosCSV(){
+  const headers = [
+    {label:'ID_CONEJO', get:c=>c.id_conejo},
+    {label:'SEXO', get:c=>c.sexo},
+    {label:'RAZA', get:c=>c.raza},
+    {label:'ID_PADRE', get:c=>c.id_padre},
+    {label:'ID_MADRE', get:c=>c.id_madre},
+    {label:'ESTADO_DISPONIBILIDAD', get:c=>c.estado_disponibilidad},
+    {label:'ESTADO_PRODUCTIVO', get:c=>c.estado_productivo},
+  ];
+  descargarCSV('cunipijaos_ejemplares_'+todayStr()+'.csv', toCSV(DB.conejos, headers));
+  toast('CSV de ejemplares descargado');
+}
+function exportarLotesCSV(){
+  const headers = [
+    {label:'ID_LOTE', get:l=>l.id_lote},
+    {label:'ID_MACHO', get:l=>l.id_macho},
+    {label:'ID_HEMBRA', get:l=>l.id_hembra},
+    {label:'FECHA_MONTA', get:l=>l.fecha_monta},
+    {label:'FECHA_FLUSHING_LUMINICO', get:l=>l.fecha_flushing_luminico},
+    {label:'RESULTADO_PALPACION', get:l=>l.resultado_palpacion},
+    {label:'NACIDOS_VIVOS', get:l=>l.nacidos_vivos},
+    {label:'NACIDOS_MUERTOS', get:l=>l.nacidos_muertos},
+    {label:'FECHA_REAL_PARTO', get:l=>l.fecha_real_parto},
+    {label:'FECHA_REAL_DESTETE', get:l=>l.fecha_real_destete},
+    {label:'CANTIDAD_DESTETADOS', get:l=>l.cantidad_destetados},
+    {label:'MORTALIDAD_LACTANCIA', get:l=>l.mortalidad_lactancia},
+    {label:'COMENTARIO', get:l=>l.comentario},
+    {label:'PESO_P1', get:l=>l.pesajes.p1 && l.pesajes.p1.peso}, {label:'CANT_P1', get:l=>l.pesajes.p1 && l.pesajes.p1.cantidad},
+    {label:'PESO_P2', get:l=>l.pesajes.p2 && l.pesajes.p2.peso}, {label:'CANT_P2', get:l=>l.pesajes.p2 && l.pesajes.p2.cantidad},
+    {label:'PESO_P3', get:l=>l.pesajes.p3 && l.pesajes.p3.peso}, {label:'CANT_P3', get:l=>l.pesajes.p3 && l.pesajes.p3.cantidad},
+    {label:'PESO_P4', get:l=>l.pesajes.p4 && l.pesajes.p4.peso}, {label:'CANT_P4', get:l=>l.pesajes.p4 && l.pesajes.p4.cantidad},
+    {label:'PESO_P5', get:l=>l.pesajes.p5 && l.pesajes.p5.peso}, {label:'CANT_P5', get:l=>l.pesajes.p5 && l.pesajes.p5.cantidad},
+  ];
+  descargarCSV('cunipijaos_lotes_'+todayStr()+'.csv', toCSV(DB.lotes, headers));
+  toast('CSV de lotes descargado');
+}
+
+/* =========================================================
+   MODAL GENÉRICO
+   ========================================================= */
+function cerrarModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarModal(); });
+
+/* =========================================================
+   INICIO
+   ========================================================= */
+cargarDB();
+renderTodo();
+cambiarTab('panel');
+</script>
+</body>
+</html>
