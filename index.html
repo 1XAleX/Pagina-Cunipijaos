@@ -3,25 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CUNIPIJAOS · Registro cunícola</title>
+<title>CUNIPIJAOS · Unidad de Producción Bio-Industrial</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #EFE9DC;
-    --surface: #FBF8F2;
-    --surface-2: #F3EDE0;
-    --border: #D9CFB8;
-    --text: #2A2620;
-    --muted: #786F5C;
-    --primary: #3F5B43;
-    --primary-dark: #2C4030;
-    --primary-light: #6E8A6F;
-    --accent: #B5591F;
-    --warn: #B4831F;
-    --danger: #A13B2A;
-    --good: #3F5B43;
+    --bg: #EAEDEC;
+    --surface: #FFFFFF;
+    --surface-2: #F1F4F3;
+    --border: #D4DBD8;
+    --text: #1C2724;
+    --muted: #5B6864;
+    --primary: #163A2E;
+    --primary-dark: #0D2620;
+    --primary-light: #3E6152;
+    --accent: #C9971E;
+    --info: #2A6CB0;
+    --warn: #C9971E;
+    --danger: #B23A32;
+    --good: #163A2E;
+    --primary-soft: #DCE6E1;
+    --good-soft: #DCE6E1;
+    --accent-soft: #F3E7CA;
+    --info-soft: #DCE7F3;
+    --warn-soft: #F3E7CA;
+    --danger-soft: #F4DAD6;
   }
   *{box-sizing:border-box;}
   body{
@@ -30,7 +38,7 @@
     font-family:'IBM Plex Sans', sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3,.font-display{ font-family:'Fraunces', serif; }
+  h1,h2,h3,.font-display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-.01em; }
   .mono{ font-family:'IBM Plex Mono', monospace; }
 
   /* ---- Layout shell ---- */
@@ -182,9 +190,63 @@
   }
   .toast.show{ opacity:1; transform:translateY(0); }
 
+  /* ---- Dashboard vivo ---- */
+  .kpi-card{
+    display:flex; align-items:center; gap:.75rem;
+    border:1px solid var(--border); border-radius:8px; padding:.85rem;
+    background:var(--surface);
+  }
+  .kpi-icon{
+    width:38px; height:38px; border-radius:10px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .kpi-value{ font-family:'Fraunces'; font-size:1.4rem; line-height:1.1; color:var(--text); }
+  .kpi-label{ font-size:.72rem; color:var(--muted); margin-top:.1rem; }
+
+  .agenda-strip{ display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.25rem; }
+  .agenda-day{
+    flex:1; min-width:72px; text-align:center; border:1px solid var(--border);
+    border-radius:8px; padding:.55rem .3rem; cursor:pointer; background:var(--surface);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .agenda-day:hover{ border-color:var(--primary-light); }
+  .agenda-day.is-today{ background:var(--primary-soft); border-color:var(--primary); }
+  .agenda-day.is-selected{ box-shadow:0 0 0 2px var(--primary-dark) inset; }
+  .agenda-day .wd{ font-size:.68rem; color:var(--muted); text-transform:capitalize; }
+  .agenda-day .num{ font-family:'Fraunces'; font-size:1.15rem; color:var(--text); }
+  .agenda-count{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:18px; height:18px; border-radius:9px; font-size:.68rem; margin-top:.25rem;
+    background:var(--danger); color:#fff; padding:0 .3rem;
+  }
+  .agenda-count.ok{ background:var(--primary-light); }
+
+  .section-header{
+    display:flex; align-items:center; gap:.5rem; margin-bottom:.85rem;
+  }
+  .section-header .ic{ color:var(--primary-dark); }
+  .section-header h3{ font-family:'Fraunces'; font-size:1.05rem; color:var(--primary-dark); margin:0; }
+
+  .distro-bar{ display:flex; height:14px; border-radius:7px; overflow:hidden; border:1px solid var(--border); }
+  .distro-legend{ display:flex; flex-wrap:wrap; gap:.9rem; margin-top:.6rem; font-size:.78rem; color:var(--muted); }
+  .distro-legend .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:.3rem; }
+
+  .empty-ok{
+    display:flex; align-items:center; gap:.6rem; padding:.75rem .9rem;
+    border:1px dashed var(--primary-light); border-radius:8px; background:var(--primary-soft);
+    color:var(--primary-dark); font-size:.9rem; margin-bottom:1rem;
+  }
+
   @media (max-width:640px){
     .tabbar{ overflow-x:auto; }
     .modal-box{ padding:1.1rem; }
+  }
+
+  .qr-label{ padding:.5rem; }
+  @media print{
+    body.printing-label *{ visibility:hidden; }
+    body.printing-label .qr-label, body.printing-label .qr-label *{ visibility:visible; }
+    body.printing-label .qr-label{ position:fixed; top:0; left:0; width:100%; padding-top:2rem; }
   }
 </style>
 </head>
@@ -193,10 +255,12 @@
 <header class="app-header px-5 py-4 flex items-center justify-between flex-wrap gap-3">
   <div>
     <h1 class="text-xl font-semibold">CUNIPIJAOS</h1>
-    <div class="subtitle text-xs">Registro y control cunícola</div>
+    <div class="subtitle text-xs">Unidad de Producción Bio-Industrial · Centro de Selección Genética</div>
   </div>
   <div class="flex items-center gap-3 flex-wrap">
     <span class="text-xs subtitle" id="hoyLabel"></span>
+    <span class="text-xs" id="nubeEstado" style="color:#C9D6C6;">☁ Conectando…</span>
+    <button class="ghost-btn" onclick="abrirConfiguracion()">Configuración</button>
     <button class="ghost-btn" onclick="exportarDatos()">Exportar respaldo</button>
     <label class="ghost-btn cursor-pointer">
       Importar respaldo
@@ -206,13 +270,14 @@
 </header>
 
 <nav class="tabbar mt-4" id="tabbar">
-  <button class="tab-btn" data-tab="panel" onclick="cambiarTab('panel')">Panel de tareas</button>
-  <button class="tab-btn" data-tab="ejemplares" onclick="cambiarTab('ejemplares')">Ejemplares</button>
-  <button class="tab-btn" data-tab="lotes" onclick="cambiarTab('lotes')">Ciclos productivos</button>
-  <button class="tab-btn" data-tab="estadisticas" onclick="cambiarTab('estadisticas')">Estadísticas</button>
+  <button class="tab-btn" data-tab="panel" onclick="cambiarTab('panel')">Resumen Operativo</button>
+  <button class="tab-btn" data-tab="ejemplares" onclick="cambiarTab('ejemplares')">Banco Genético</button>
+  <button class="tab-btn" data-tab="lotes" onclick="cambiarTab('lotes')">Trazabilidad y Sincronización</button>
+  <button class="tab-btn" data-tab="estadisticas" onclick="cambiarTab('estadisticas')">Control Estadístico (CEP)</button>
 </nav>
 
 <main class="px-1 sm:px-0 max-w-6xl mx-auto pb-16">
+
   <div class="tab-panel-wrap">
     <section id="tab-panel"></section>
     <section id="tab-ejemplares" class="hidden"></section>
@@ -233,14 +298,21 @@ let DB = { conejos: [], lotes: [] };
 
 function datosPorDefecto(){
   return {
+    config: {
+      capacidadJaulasCebo: 40,
+      umbralAlertaPct: 85,
+      lat: 5.5353,
+      lon: -73.3678,
+      ubicacionLabel: 'Tunja, Boyacá',
+    },
     conejos: [
-      { id_conejo:'CP_001', sexo:'MACHO',  raza:'MIX HOLANDES', id_padre:null, id_madre:null,   estado_disponibilidad:'BAJA',   estado_productivo:'BAJA_VENTA' },
-      { id_conejo:'CP_002', sexo:'MACHO',  raza:'CAL*NZ',       id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE' },
-      { id_conejo:'CP_003', sexo:'MACHO',  raza:'CAL*NZ',       id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DESARROLLO' },
-      { id_conejo:'CP_004', sexo:'HEMBRA', raza:'MIX',          id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'MATERNIDAD_LACTANTE' },
-      { id_conejo:'CP_005', sexo:'HEMBRA', raza:'NZ',           id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE' },
-      { id_conejo:'CP_006', sexo:'HEMBRA', raza:'MIX',          id_padre:null, id_madre:'CP_004', estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE' },
-      { id_conejo:'CP_007', sexo:'HEMBRA', raza:'F1 (NZ*CAL)',  id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'GESTANTE_CONFIRMADA' },
+      { id_conejo:'CP_001', sexo:'MACHO',  raza:'MIX HOLANDES', id_padre:null, id_madre:null,   estado_disponibilidad:'BAJA',   estado_productivo:'BAJA_VENTA', categoria_uso:'CEBO' },
+      { id_conejo:'CP_002', sexo:'MACHO',  raza:'CAL*NZ',       id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE', categoria_uso:'REPRODUCTOR' },
+      { id_conejo:'CP_003', sexo:'MACHO',  raza:'CAL*NZ',       id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DESARROLLO', categoria_uso:'REEMPLAZO' },
+      { id_conejo:'CP_004', sexo:'HEMBRA', raza:'MIX',          id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'MATERNIDAD_LACTANTE', categoria_uso:'REPRODUCTOR' },
+      { id_conejo:'CP_005', sexo:'HEMBRA', raza:'NZ',           id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE', categoria_uso:'REPRODUCTOR' },
+      { id_conejo:'CP_006', sexo:'HEMBRA', raza:'MIX',          id_padre:null, id_madre:'CP_004', estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DISPONIBLE', categoria_uso:'REPRODUCTOR' },
+      { id_conejo:'CP_007', sexo:'HEMBRA', raza:'F1 (NZ*CAL)',  id_padre:null, id_madre:null,   estado_disponibilidad:'ACTIVO', estado_productivo:'GESTANTE_CONFIRMADA', categoria_uso:'REPRODUCTOR' },
     ],
     lotes: [
       {
@@ -250,6 +322,7 @@ function datosPorDefecto(){
         nacidos_vivos:null, nacidos_muertos:null,
         fecha_real_parto:null, fecha_real_destete:null,
         cantidad_destetados:null, mortalidad_lactancia:null,
+        nido_armado:{hecho:false, fecha:null},
         comentario:'Cruce no deseado, probable venta para carne.',
         unidad_peso:'kg', pesajes:{ p1:{}, p2:{}, p3:{}, p4:{}, p5:{} },
       },
@@ -260,6 +333,7 @@ function datosPorDefecto(){
         nacidos_vivos:null, nacidos_muertos:null,
         fecha_real_parto:null, fecha_real_destete:null,
         cantidad_destetados:null, mortalidad_lactancia:null,
+        nido_armado:{hecho:false, fecha:null},
         comentario:'Primer cruce planeado, F1 casi perfecto.',
         unidad_peso:'kg', pesajes:{ p1:{}, p2:{}, p3:{}, p4:{}, p5:{} },
       },
@@ -270,11 +344,23 @@ function datosPorDefecto(){
         nacidos_vivos:null, nacidos_muertos:null,
         fecha_real_parto:null, fecha_real_destete:null,
         cantidad_destetados:null, mortalidad_lactancia:null,
+        nido_armado:{hecho:false, fecha:null},
         comentario:'',
         unidad_peso:'kg', pesajes:{ p1:{}, p2:{}, p3:{}, p4:{}, p5:{} },
       },
     ],
   };
+}
+
+function normalizarDB(){
+  DB.conejos = DB.conejos || [];
+  DB.lotes = DB.lotes || [];
+  DB.config = DB.config || { capacidadJaulasCebo:40, umbralAlertaPct:85, lat:5.5353, lon:-73.3678, ubicacionLabel:'Tunja, Boyacá' };
+  DB.lotes.forEach(l=>{
+    if(!l.pesajes) l.pesajes = { p1:{}, p2:{}, p3:{}, p4:{}, p5:{} };
+    if(!l.nido_armado) l.nido_armado = { hecho:false, fecha:null };
+  });
+  DB.conejos.forEach(c=>{ if(!c.categoria_uso) c.categoria_uso = 'REPRODUCTOR'; });
 }
 
 function cargarDB(){
@@ -290,13 +376,77 @@ function cargarDB(){
     console.error('Error leyendo localStorage', e);
     DB = datosPorDefecto();
   }
-  DB.conejos = DB.conejos || [];
-  DB.lotes = DB.lotes || [];
-  DB.lotes.forEach(l=>{ if(!l.pesajes) l.pesajes = { p1:{}, p2:{}, p3:{}, p4:{}, p5:{} }; });
+  normalizarDB();
 }
 function guardarDB(){
   localStorage.setItem(LS_KEY, JSON.stringify(DB));
+  if(window.CuniNube && window.CuniNube.listo){
+    window.CuniNube.subir(DB);
+  }
 }
+
+// Puente para el módulo de Firebase (los módulos no comparten el scope del script clásico)
+window.obtenerDBActual = function(){ return DB; };
+window.reemplazarDBDesdeNube = function(nuevaData){
+  DB = nuevaData;
+  normalizarDB();
+  localStorage.setItem(LS_KEY, JSON.stringify(DB));
+  renderTodo();
+};
+
+function abrirConfiguracion(){
+  const cfg = DB.config;
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+      <div class="modal-box">
+        <h3 class="font-display text-xl mb-4">Configuración operativa</h3>
+        <div class="field">
+          <label>Capacidad total de jaulas de cebo</label>
+          <input id="cfg_capacidad" type="number" min="1" value="${cfg.capacidadJaulasCebo}">
+        </div>
+        <div class="field">
+          <label>Umbral de alerta de ocupación (%)</label>
+          <input id="cfg_umbral" type="number" min="1" max="100" value="${cfg.umbralAlertaPct}">
+        </div>
+        <div class="section-title">Monitoreo ambiental</div>
+        <div class="grid sm:grid-cols-2 gap-x-4">
+          <div class="field">
+            <label>Etiqueta de ubicación</label>
+            <input id="cfg_label" type="text" value="${cfg.ubicacionLabel}">
+          </div>
+          <div class="field"></div>
+          <div class="field">
+            <label>Latitud</label>
+            <input id="cfg_lat" type="number" step="0.0001" value="${cfg.lat}">
+          </div>
+          <div class="field">
+            <label>Longitud</label>
+            <input id="cfg_lon" type="number" step="0.0001" value="${cfg.lon}">
+          </div>
+        </div>
+        <p class="text-xs" style="color:var(--muted)">La CDO y la eficiencia de bloque son estimaciones calculadas a partir de tus propios registros, no lecturas de sensores instalados. El clima se toma de un servicio meteorológico externo (referencia exterior de la zona, no del interior del galpón).</p>
+        <div class="flex justify-end gap-2 mt-4">
+          <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="guardarConfiguracion()">Guardar</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalRoot').innerHTML = html;
+}
+
+function guardarConfiguracion(){
+  DB.config.capacidadJaulasCebo = Number(document.getElementById('cfg_capacidad').value) || DB.config.capacidadJaulasCebo;
+  DB.config.umbralAlertaPct = Number(document.getElementById('cfg_umbral').value) || DB.config.umbralAlertaPct;
+  DB.config.ubicacionLabel = document.getElementById('cfg_label').value.trim() || DB.config.ubicacionLabel;
+  DB.config.lat = Number(document.getElementById('cfg_lat').value);
+  DB.config.lon = Number(document.getElementById('cfg_lon').value);
+  guardarDB();
+  cerrarModal();
+  cargarClima();
+  renderPanel();
+  toast('Configuración guardada');
+}
+
 
 function exportarDatos(){
   const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
@@ -357,6 +507,25 @@ function toast(msg){
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+function ic(name, size){
+  size = size || 18;
+  const paths = {
+    macho: '<circle cx="9" cy="15" r="5.5"/><path d="M13 10.5L19 4.5M19 4.5h-5M19 4.5v5"/>',
+    hembra: '<circle cx="12" cy="9" r="5.5"/><path d="M12 14.5V21M9 18h6"/>',
+    lote: '<circle cx="9" cy="12" r="5.5"/><circle cx="15" cy="12" r="5.5"/>',
+    gestante: '<path d="M12 20s-7-4.4-7-10a4.5 4.5 0 018-2.8A4.5 4.5 0 0121 10c0 5.6-9 10-9 10z"/>',
+    parto: '<path d="M12 3.5c-4 0-7 4.6-7 9a7 7 0 0014 0c0-4.4-3-9-7-9z"/>',
+    pesaje: '<path d="M12 3v18M5 7h14M5 7l-2.2 5.8a3 3 0 006 0L5 7zM19 7l-2.2 5.8a3 3 0 006 0L19 7z"/>',
+    destete: '<path d="M3.5 11L12 4l8.5 7M5.5 10v9.5h13V10"/>',
+    nido: '<path d="M3 15.5c3.5-2.3 14.5-2.3 18 0M5 15.5c.7 3.1 3.6 5.5 7 5.5s6.3-2.4 7-5.5"/>',
+    alerta: '<path d="M12 3.2L21.5 20H2.5L12 3.2zM12 9.5v5M12 17h.01"/>',
+    check: '<circle cx="12" cy="12" r="9.3"/><path d="M7.5 12.3l3 3 6-6.6"/>',
+    calendario: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/>',
+    grafico: '<path d="M4 20V10M11 20V4M18 20v-7"/>',
+  };
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths[name]||''}</svg>`;
 }
 
 /* =========================================================
@@ -455,10 +624,12 @@ function generarAlertas(){
       if(cls) out.palpacion.push({lote:l, fecha:f.fPalpacion, cls});
     }
     if(l.resultado_palpacion !== 'NEGATIVO' && !l.fecha_real_parto){
-      let cls = classifyDate(f.fNido);
-      if(cls) out.nido.push({lote:l, fecha:f.fNido, cls});
-      cls = classifyDate(f.fPartoProbable);
-      if(cls) out.parto.push({lote:l, fecha:f.fPartoProbable, cls});
+      if(!(l.nido_armado && l.nido_armado.hecho)){
+        const cls = classifyDate(f.fNido);
+        if(cls) out.nido.push({lote:l, fecha:f.fNido, cls});
+      }
+      const cls2 = classifyDate(f.fPartoProbable);
+      if(cls2) out.parto.push({lote:l, fecha:f.fPartoProbable, cls:cls2});
     }
     if(l.fecha_real_parto && !l.fecha_real_destete){
       const cls = classifyDate(f.fDesteteProgramado);
@@ -477,9 +648,10 @@ function generarAlertas(){
   return out;
 }
 
-function filaAlerta(texto, item){
+function filaAlerta(texto, item, iconName){
   return `
     <div class="alert-row ${item.cls}">
+      <span class="ic mt-0.5" style="color:var(--muted)">${ic(iconName,16)}</span>
       <div class="flex-1">
         <div class="text-sm">${texto}</div>
         <div class="text-xs" style="color:var(--muted)">Lote <span class="mono">${item.lote.id_lote}</span> · ${fmt(item.fecha)} ${item.cls==='atrasado' ? '· atrasado' : (item.cls==='hoy' ? '· hoy' : '· próximos días')}</div>
@@ -488,43 +660,264 @@ function filaAlerta(texto, item){
     </div>`;
 }
 
-function bloqueAlertas(titulo, items, renderTexto){
+function bloqueAlertas(titulo, items, renderTexto, iconName){
   const cuerpo = items.length
-    ? items.map(it=>filaAlerta(renderTexto(it), it)).join('')
+    ? items.map(it=>filaAlerta(renderTexto(it), it, iconName)).join('')
     : `<div class="text-sm" style="color:var(--muted)">Sin pendientes por ahora.</div>`;
   return `
     <div class="mb-6">
-      <h3 class="text-base font-semibold mb-2" style="color:var(--primary-dark)">${titulo} ${items.length ? `<span class="text-xs font-normal" style="color:var(--muted)">(${items.length})</span>` : ''}</h3>
+      <div class="section-header">
+        <span class="ic">${ic(iconName)}</span>
+        <h3>${titulo} ${items.length ? `<span class="text-xs font-normal" style="color:var(--muted)">(${items.length})</span>` : ''}</h3>
+      </div>
       ${cuerpo}
+    </div>`;
+}
+
+function todasLasAlertasPlanas(a){
+  return [
+    ...a.palpacion.map(x=>({...x, cat:'palpacion'})),
+    ...a.nido.map(x=>({...x, cat:'nido'})),
+    ...a.parto.map(x=>({...x, cat:'parto'})),
+    ...a.destete.map(x=>({...x, cat:'destete'})),
+    ...a.pesaje.map(x=>({...x, cat:'pesaje'})),
+  ];
+}
+
+function saludo(){
+  const h = new Date().getHours();
+  if(h < 12) return 'Buenos días';
+  if(h < 19) return 'Buenas tardes';
+  return 'Buenas noches';
+}
+
+function agendaSemana(alertasPlanas){
+  const dias = [];
+  for(let i=0;i<7;i++){
+    const fecha = addDays(todayStr(), i);
+    const d = new Date(fecha+'T00:00:00');
+    let count = alertasPlanas.filter(x=>x.fecha===fecha).length;
+    if(i===0) count += alertasPlanas.filter(x=>x.fecha < fecha).length; // atrasados se acumulan en "hoy"
+    dias.push({ fecha, wd:d.toLocaleDateString('es-CO',{weekday:'short'}), num:d.getDate(), esHoy:i===0, count });
+  }
+  return dias;
+}
+
+let diaSeleccionado = null;
+function seleccionarDiaAgenda(fecha){
+  diaSeleccionado = (diaSeleccionado === fecha) ? null : fecha;
+  renderPanel();
+}
+
+function detalleDiaHtml(alertasPlanas){
+  if(!diaSeleccionado) return '';
+  const esHoy = diaSeleccionado === todayStr();
+  const items = alertasPlanas.filter(x => esHoy ? x.fecha <= diaSeleccionado : x.fecha === diaSeleccionado)
+    .sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const nombres = { palpacion:'Palpación', nido:'Poner nido', parto:'Parto esperado', destete:'Destete', pesaje:'Pesaje' };
+  const iconos = { palpacion:'alerta', nido:'nido', parto:'parto', destete:'destete', pesaje:'pesaje' };
+  const cuerpo = items.length
+    ? items.map(it=>`
+        <div class="alert-row ${it.cls}">
+          <span class="ic mt-0.5" style="color:var(--muted)">${ic(iconos[it.cat],16)}</span>
+          <div class="flex-1">
+            <div class="text-sm">${nombres[it.cat]}${it.cat==='pesaje' ? ' ' + it.n : ''} — lote <span class="mono">${it.lote.id_lote}</span></div>
+            <div class="text-xs" style="color:var(--muted)">${fmt(it.fecha)}</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="irALote('${it.lote.id_lote}')">Ver lote</button>
+        </div>`).join('')
+    : `<div class="text-sm" style="color:var(--muted)">Sin tareas para ese día.</div>`;
+  return `
+    <div class="mb-6">
+      <div class="section-header"><span class="ic">${ic('calendario')}</span><h3>${fmt(diaSeleccionado)}${esHoy?' · incluye atrasados':''}</h3></div>
+      ${cuerpo}
+    </div>`;
+}
+
+function distribucionBancoHtml(){
+  const activos = DB.conejos.filter(c=>c.estado_disponibilidad==='ACTIVO');
+  const machos = activos.filter(c=>c.sexo==='MACHO').length;
+  const hembras = activos.filter(c=>c.sexo==='HEMBRA').length;
+  const bajas = DB.conejos.filter(c=>c.estado_disponibilidad==='BAJA').length;
+  const total = machos + hembras + bajas || 1;
+
+  const segMacho = (machos/total*100);
+  const segHembra = (hembras/total*100);
+  const segBaja = (bajas/total*100);
+
+  const conteoEstados = {};
+  activos.forEach(c=>{ conteoEstados[c.estado_productivo] = (conteoEstados[c.estado_productivo]||0)+1; });
+  const maxEstado = Math.max(1, ...Object.values(conteoEstados));
+
+  const barrasEstado = Object.entries(conteoEstados)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([k,v])=>barraHtml(labelEstadoProductivo(k), v, maxEstado, ''))
+    .join('');
+
+  return `
+    <div class="mb-2">
+      <div class="distro-bar">
+        <div style="width:${segMacho}%; background:var(--info)"></div>
+        <div style="width:${segHembra}%; background:var(--accent)"></div>
+        <div style="width:${segBaja}%; background:#B9AF95"></div>
+      </div>
+      <div class="distro-legend">
+        <span><span class="dot" style="background:var(--info)"></span>Machos activos (${machos})</span>
+        <span><span class="dot" style="background:var(--accent)"></span>Hembras activas (${hembras})</span>
+        <span><span class="dot" style="background:#B9AF95"></span>Baja (${bajas})</span>
+      </div>
+    </div>
+    <div class="mt-4">${barrasEstado || `<div class="text-sm" style="color:var(--muted)">Sin ejemplares activos registrados.</div>`}</div>
+  `;
+}
+
+let climaActual = { estado:'cargando' };
+async function cargarClima(){
+  climaActual = { estado:'cargando' };
+  if(document.getElementById('climaBox')) renderPanel();
+  try{
+    const { lat, lon } = DB.config;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&wind_speed_unit=ms`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    climaActual = { estado:'ok', temp:data.current.temperature_2m, hum:data.current.relative_humidity_2m, viento:data.current.wind_speed_10m };
+  }catch(e){
+    climaActual = { estado:'error' };
+  }
+  renderPanel();
+}
+
+function climaCardsHtml(){
+  if(climaActual.estado==='cargando'){
+    return `<div class="text-sm" style="color:var(--muted)">Consultando servicio meteorológico externo…</div>`;
+  }
+  if(climaActual.estado==='error'){
+    return `<div class="text-sm" style="color:var(--muted)">Sin datos disponibles (verifica conexión a internet). <button class="btn btn-outline btn-sm" onclick="cargarClima()">Reintentar</button></div>`;
+  }
+  const humOk = climaActual.hum>=60 && climaActual.hum<=70;
+  return `
+    <div class="grid sm:grid-cols-3 gap-3">
+      <div class="kpi-card"><div class="kpi-icon" style="background:var(--info-soft); color:var(--info)">${ic('grafico',20)}</div><div><div class="kpi-value">${climaActual.temp.toFixed(1)}°C</div><div class="kpi-label">Temperatura exterior</div></div></div>
+      <div class="kpi-card"><div class="kpi-icon" style="background:${humOk?'var(--good-soft)':'var(--warn-soft)'}; color:${humOk?'var(--good)':'var(--warn)'}">${ic('grafico',20)}</div><div><div class="kpi-value">${climaActual.hum.toFixed(0)}%</div><div class="kpi-label">Humedad relativa (óptimo 60–70%)</div></div></div>
+      <div class="kpi-card"><div class="kpi-icon" style="background:var(--info-soft); color:var(--info)">${ic('grafico',20)}</div><div><div class="kpi-value">${climaActual.viento.toFixed(2)} m/s</div><div class="kpi-label">Viento exterior (ref.; interior objetivo &lt;0.1 m/s)</div></div></div>
+    </div>
+    <p class="text-xs mt-2" style="color:var(--muted)">Referencia climática exterior de ${DB.config.ubicacionLabel}. La velocidad de aire dentro del galpón debe verificarse con anemómetro a nivel de los animales; este dato es solo de contexto de zona.</p>`;
+}
+
+function calcularCDO(){
+  const hoy = todayStr();
+  const desde = addDays(hoy, -90);
+  let ocupacion = 0;
+  DB.lotes.forEach(l=>{
+    if(l.fecha_real_destete && l.fecha_real_destete >= desde && l.fecha_real_destete <= hoy){
+      ocupacion += l.cantidad_destetados || 0;
+    }
+  });
+  const capacidad = DB.config.capacidadJaulasCebo || 1;
+  const pct = (ocupacion/capacidad*100);
+  const umbral = DB.config.umbralAlertaPct || 85;
+  let estado = 'verde';
+  if(pct >= umbral) estado = 'rojo';
+  else if(pct >= umbral*0.75) estado = 'amarillo';
+  return { ocupacion, capacidad, pct, estado };
+}
+
+function calcularEficienciaBloque(){
+  const hembras = hembrasActivas().length;
+  const enCurso = DB.lotes.filter(l=>!l.fecha_real_destete && l.resultado_palpacion!=='NEGATIVO').length;
+  return hembras ? Math.min(100, enCurso/hembras*100) : 0;
+}
+
+function operativosHtml(){
+  const c = calcularCDO();
+  const colorMap = { verde:'good', amarillo:'warn', rojo:'danger' };
+  const textoMap = { verde:'Autorización de monta/flushing habilitada', amarillo:'Precaución — capacidad ajustada', rojo:'Restringido — sin cupo estimado de cebo' };
+  const color = colorMap[c.estado];
+  const efic = calcularEficienciaBloque();
+  return `
+    <div class="grid sm:grid-cols-2 gap-3 mb-6">
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--${color}-soft); color:var(--${color})">${ic('lote',20)}</div>
+        <div>
+          <div class="kpi-value">${c.pct.toFixed(0)}% ocupación</div>
+          <div class="kpi-label">CDO · ${textoMap[c.estado]} (${c.ocupacion}/${c.capacidad} jaulas de cebo est.)</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--primary-soft); color:var(--primary)">${ic('grafico',20)}</div>
+        <div>
+          <div class="kpi-value">${efic.toFixed(0)}%</div>
+          <div class="kpi-label">Eficiencia de bloque · hembras activas en ciclo</div>
+        </div>
+      </div>
     </div>`;
 }
 
 function renderPanel(){
   const a = generarAlertas();
   const s = statsGlobales();
+  const planas = todasLasAlertasPlanas(a);
+  const totalPendientes = planas.length;
+  const dias = agendaSemana(planas);
+
   const kpis = [
-    ['Machos activos', s.machosActivos],
-    ['Hembras activas', s.hembrasActivas],
-    ['Lotes en curso', s.lotesEnCurso],
-    ['Total de lotes', s.totalLotes],
+    ['macho', 'info', 'Machos activos', s.machosActivos],
+    ['hembra', 'accent', 'Hembras activas', s.hembrasActivas],
+    ['lote', 'primary', 'Lotes en curso', s.lotesEnCurso],
+    ['gestante', 'good', 'Gestantes confirmadas', DB.lotes.filter(l=>l.resultado_palpacion==='POSITIVO' && !l.fecha_real_parto).length],
+    ['calendario', 'warn', 'Partos esta semana', a.parto.length],
+    ['pesaje', 'danger', 'Pesajes pendientes', a.pesaje.length],
   ];
+
   const kpiHtml = `
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-      ${kpis.map(([label,val])=>`
-        <div class="rounded-md border p-3" style="border-color:var(--border); background:var(--surface-2)">
-          <div class="text-2xl font-display" style="color:var(--primary-dark)">${val}</div>
-          <div class="text-xs" style="color:var(--muted)">${label}</div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+      ${kpis.map(([icon,color,label,val])=>`
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:var(--${color}-soft, var(--surface-2)); color:var(--${color})">${ic(icon,20)}</div>
+          <div>
+            <div class="kpi-value">${val}</div>
+            <div class="kpi-label">${label}</div>
+          </div>
         </div>`).join('')}
     </div>`;
+
+  const agendaHtml = `
+    <div class="mb-6">
+      <div class="section-header"><span class="ic">${ic('calendario')}</span><h3>Esta semana</h3></div>
+      <div class="agenda-strip">
+        ${dias.map(d=>`
+          <div class="agenda-day ${d.esHoy?'is-today':''} ${diaSeleccionado===d.fecha?'is-selected':''}" onclick="seleccionarDiaAgenda('${d.fecha}')">
+            <div class="wd">${d.esHoy?'Hoy':d.wd}</div>
+            <div class="num">${d.num}</div>
+            ${d.count>0 ? `<div class="agenda-count">${d.count}</div>` : `<div class="agenda-count ok">✓</div>`}
+          </div>`).join('')}
+      </div>
+      ${detalleDiaHtml(planas)}
+    </div>`;
+
+  const resumenTexto = totalPendientes===0
+    ? `<div class="empty-ok">${ic('check',18)}<span>Todo al día: no hay tareas pendientes esta semana.</span></div>`
+    : `<p class="text-sm mb-4" style="color:var(--muted)">Tienes <strong>${totalPendientes}</strong> tarea${totalPendientes===1?'':'s'} entre hoy y los próximos 7 días (incluye atrasadas).</p>`;
+
   const html = `
-    <h2 class="font-display text-2xl mb-1">Panel de tareas</h2>
-    <p class="text-sm mb-4" style="color:var(--muted)">Pendientes de hoy y de los próximos 7 días, y todo lo que quedó atrasado.</p>
+    <h2 class="font-display text-2xl mb-1">${saludo()} — Resumen Operativo</h2>
+    ${resumenTexto}
+    <button class="btn btn-primary mb-6" onclick="abrirSOP()">${ic('calendario',16)} Registro rápido de campo (SOP)</button>
     ${kpiHtml}
-    ${bloqueAlertas('Palpaciones pendientes', a.palpacion, it=>`Palpar a la hembra del lote (día 14 tras la monta).`)}
-    ${bloqueAlertas('Poner nido', a.nido, it=>`Instalar nidal para el parto próximo (día 28 tras la monta).`)}
-    ${bloqueAlertas('Partos esperados', a.parto, it=>`Parto probable de este lote (día 31 tras la monta).`)}
-    ${bloqueAlertas('Destetes', a.destete, it=>`Destete programado del lote.`)}
-    ${bloqueAlertas('Pesajes', a.pesaje, it=>`Pesaje ${it.n} — ${it.label}.`)}
+    ${operativosHtml()}
+    <div class="mb-6" id="climaBox">
+      <div class="section-header"><span class="ic">${ic('grafico')}</span><h3>Monitoreo ambiental — ${DB.config.ubicacionLabel}</h3></div>
+      ${climaCardsHtml()}
+    </div>
+    ${agendaHtml}
+    ${bloqueAlertas('Confirmación de preñez (palpación)', a.palpacion, it=>`Palpar a la hembra del lote (día 14 tras la monta dirigida).`, 'alerta')}
+    ${bloqueAlertas('Armado e higiene de nido', a.nido, it=>`Instalar y desinfectar nidal para el parto próximo (día 28 tras la monta).`, 'nido')}
+    ${bloqueAlertas('Partos proyectados', a.parto, it=>`Parto probable de este lote (día 31 tras la monta).`, 'parto')}
+    ${bloqueAlertas('Destete programado', a.destete, it=>`Destete programado del lote.`, 'destete')}
+    ${bloqueAlertas('Pesaje y control de cebo', a.pesaje, it=>`Pesaje ${it.n} — ${it.label} (sin estrés etológico).`, 'pesaje')}
+    <div class="section-title">Distribución del banco genético</div>
+    ${distribucionBancoHtml()}
   `;
   document.getElementById('tab-panel').innerHTML = html;
 }
@@ -539,6 +932,22 @@ function irALote(id){
    ========================================================= */
 let filtroEjemplares = { sexo:'', disp:'', prod:'', q:'' };
 
+function genotipoBadgeHtml(raza){
+  if(!raza) return '—';
+  const norm = raza.toUpperCase().replace(/\s/g,'');
+  if(norm.includes('CAL*NZ') || norm.includes('CAL×NZ')){
+    return `${raza}<div class="text-xs" style="color:var(--muted)">Terminal 75% CAL / 25% NZ</div>`;
+  }
+  return raza;
+}
+
+const CATEGORIAS_USO = [
+  ['REPRODUCTOR','Reproductor'],
+  ['REEMPLAZO','Reemplazo'],
+  ['CEBO','Cebo'],
+];
+function labelCategoriaUso(v){ const f = CATEGORIAS_USO.find(x=>x[0]===v); return f ? f[1] : v; }
+
 function renderEjemplares(){
   const conejos = DB.conejos.filter(c=>{
     if(filtroEjemplares.sexo && c.sexo!==filtroEjemplares.sexo) return false;
@@ -552,7 +961,8 @@ function renderEjemplares(){
     <tr>
       <td class="id-cell">${c.id_conejo}</td>
       <td>${c.sexo === 'MACHO' ? 'Macho' : 'Hembra'}</td>
-      <td>${c.raza || '—'}</td>
+      <td>${genotipoBadgeHtml(c.raza)}</td>
+      <td><span class="badge b-muted"><span class="dot"></span>${labelCategoriaUso(c.categoria_uso)}</span></td>
       <td class="id-cell text-xs">${c.id_padre || '—'}</td>
       <td class="id-cell text-xs">${c.id_madre || '—'}</td>
       <td>
@@ -563,6 +973,7 @@ function renderEjemplares(){
       </td>
       <td class="whitespace-nowrap">
         <button class="btn btn-outline btn-sm" onclick="abrirFichaConejo('${c.id_conejo}')">Ficha</button>
+        <button class="btn btn-outline btn-sm" onclick="abrirEtiquetaQR('conejo','${c.id_conejo}')">QR</button>
         <button class="btn btn-outline btn-sm" onclick="abrirFormConejo('${c.id_conejo}')">Editar</button>
         <button class="btn btn-danger btn-sm" onclick="eliminarConejo('${c.id_conejo}')">Eliminar</button>
       </td>
@@ -570,7 +981,7 @@ function renderEjemplares(){
 
   const html = `
     <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
-      <h2 class="font-display text-2xl">Banco de ejemplares</h2>
+      <h2 class="font-display text-2xl">Banco Genético</h2>
       <div class="flex gap-2">
         <button class="btn btn-outline" onclick="exportarConejosCSV()">Exportar CSV</button>
         <button class="btn btn-primary" onclick="abrirFormConejo()">Nuevo ejemplar</button>
@@ -595,7 +1006,7 @@ function renderEjemplares(){
         </select>
       </div>
       <div>
-        <label>Estado productivo</label>
+        <label>Estatus fisiológico</label>
         <select onchange="filtroEjemplares.prod=this.value; renderEjemplares()">
           <option value="">Todos</option>
           ${ESTADOS_PRODUCTIVOS.map(([v,l])=>`<option value="${v}" ${filtroEjemplares.prod===v?'selected':''}>${l}</option>`).join('')}
@@ -610,10 +1021,10 @@ function renderEjemplares(){
     <div class="overflow-x-auto">
       <table>
         <thead><tr>
-          <th>ID</th><th>Sexo</th><th>Raza</th><th>Padre</th><th>Madre</th><th>Disponibilidad</th><th>Estado productivo</th><th></th>
+          <th>ID</th><th>Sexo</th><th>Genotipo</th><th>Categoría</th><th>Padre</th><th>Madre</th><th>Disponibilidad</th><th>Estatus fisiológico</th><th></th>
         </tr></thead>
         <tbody>
-          ${filas || `<tr><td colspan="8" class="text-center py-6" style="color:var(--muted)">No hay ejemplares registrados con estos filtros.</td></tr>`}
+          ${filas || `<tr><td colspan="9" class="text-center py-6" style="color:var(--muted)">No hay ejemplares registrados con estos filtros.</td></tr>`}
         </tbody>
       </table>
     </div>
@@ -623,7 +1034,7 @@ function renderEjemplares(){
 
 function abrirFormConejo(id){
   const editando = !!id;
-  const c = editando ? getConejo(id) : { estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DESARROLLO', sexo:'HEMBRA' };
+  const c = editando ? getConejo(id) : { estado_disponibilidad:'ACTIVO', estado_productivo:'LIBRE_DESARROLLO', sexo:'HEMBRA', categoria_uso:'REPRODUCTOR' };
   const razas = [...new Set(DB.conejos.map(x=>x.raza).filter(Boolean))];
 
   const html = `
@@ -643,9 +1054,15 @@ function abrirFormConejo(id){
             </select>
           </div>
           <div class="field">
-            <label>Raza</label>
+            <label>Genotipo</label>
             <input id="f_raza" list="listaRazas" type="text" placeholder="CAL*NZ, MIX, F1..." value="${c.raza||''}">
             <datalist id="listaRazas">${razas.map(r=>`<option value="${r}">`).join('')}</datalist>
+          </div>
+          <div class="field">
+            <label>Categoría de uso *</label>
+            <select id="f_categoria">
+              ${CATEGORIAS_USO.map(([v,l])=>`<option value="${v}" ${c.categoria_uso===v?'selected':''}>${l}</option>`).join('')}
+            </select>
           </div>
           <div class="field">
             <label>Disponibilidad *</label>
@@ -669,7 +1086,7 @@ function abrirFormConejo(id){
             </select>
           </div>
           <div class="field sm:col-span-2">
-            <label>Estado productivo *</label>
+            <label>Estatus fisiológico *</label>
             <select id="f_prod">
               ${ESTADOS_PRODUCTIVOS.map(([v,l])=>`<option value="${v}" ${c.estado_productivo===v?'selected':''}>${l}</option>`).join('')}
             </select>
@@ -698,6 +1115,7 @@ function guardarConejo(idOriginal){
     id_conejo: id,
     sexo: document.getElementById('f_sexo').value,
     raza: document.getElementById('f_raza').value.trim(),
+    categoria_uso: document.getElementById('f_categoria').value,
     id_padre: document.getElementById('f_padre').value || null,
     id_madre: document.getElementById('f_madre').value || null,
     estado_disponibilidad: document.getElementById('f_disp').value,
@@ -734,34 +1152,40 @@ function renderLotes(){
     const est = estadoLote(l);
     const f = fechasLote(l);
     const alerta = checkConsanguinidad(l.id_macho, l.id_hembra);
+    const macho = getConejo(l.id_macho), hembra = getConejo(l.id_hembra);
+    const genotipoCruce = `${macho ? (macho.raza||'s/d') : l.id_macho} × ${hembra ? (hembra.raza||'s/d') : l.id_hembra}`;
     return `
       <tr>
         <td class="id-cell">${l.id_lote}</td>
         <td class="id-cell text-xs">${l.id_macho}</td>
         <td class="id-cell text-xs">${l.id_hembra}</td>
+        <td class="text-xs">${genotipoCruce}</td>
         <td>${fmt(l.fecha_monta)}</td>
         <td><span class="badge b-${est.color}"><span class="dot"></span>${est.label}</span></td>
         <td>${l.fecha_real_parto ? fmt(l.fecha_real_parto) : fmt(f.fPartoProbable) + ' (prob.)'}</td>
         <td>${alerta ? '<span class="badge b-danger"><span class="dot"></span>Consanguinidad</span>' : ''}</td>
-        <td><button class="btn btn-outline btn-sm" onclick="abrirDetalleLote('${l.id_lote}')">Ver / editar</button></td>
+        <td class="whitespace-nowrap">
+          <button class="btn btn-outline btn-sm" onclick="abrirEtiquetaQR('lote','${l.id_lote}')">QR</button>
+          <button class="btn btn-outline btn-sm" onclick="abrirDetalleLote('${l.id_lote}')">Ver / editar</button>
+        </td>
       </tr>`;
   }).join('');
 
   const html = `
     <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
-      <h2 class="font-display text-2xl">Ciclos productivos</h2>
+      <h2 class="font-display text-2xl">Trazabilidad y Sincronización</h2>
       <div class="flex gap-2">
         <button class="btn btn-outline" onclick="exportarLotesCSV()">Exportar CSV</button>
-        <button class="btn btn-primary" onclick="abrirFormLote()">Nueva monta</button>
+        <button class="btn btn-primary" onclick="abrirFormLote()">Nueva monta dirigida</button>
       </div>
     </div>
     <div class="overflow-x-auto">
       <table>
         <thead><tr>
-          <th>Lote</th><th>Macho</th><th>Hembra</th><th>Fecha monta</th><th>Estado</th><th>Parto</th><th>Alerta</th><th></th>
+          <th>ID Lote / Jaula</th><th>Macho</th><th>Hembra</th><th>Genotipo (Sistema 3 vías)</th><th>Fecha sincronización</th><th>Estatus</th><th>Parto</th><th>Alerta</th><th></th>
         </tr></thead>
         <tbody>
-          ${filas || `<tr><td colspan="8" class="text-center py-6" style="color:var(--muted)">Aún no hay lotes registrados.</td></tr>`}
+          ${filas || `<tr><td colspan="9" class="text-center py-6" style="color:var(--muted)">Aún no hay lotes registrados.</td></tr>`}
         </tbody>
       </table>
     </div>
@@ -923,6 +1347,13 @@ function abrirDetalleLote(id){
             <div class="readonly-pill">${fmt(f.fNido)}</div>
           </div>
           <div class="field">
+            <label>Armado e higiene de nido</label>
+            <div class="flex items-center gap-2" style="padding-top:.4rem">
+              <input type="checkbox" id="d_nido_hecho" style="width:auto" ${l.nido_armado && l.nido_armado.hecho ? 'checked' : ''}>
+              <input type="date" id="d_nido_fecha" value="${(l.nido_armado && l.nido_armado.fecha) || ''}" style="flex:1">
+            </div>
+          </div>
+          <div class="field">
             <label>Fecha probable de parto (calculada)</label>
             <div class="readonly-pill">${fmt(f.fPartoProbable)}</div>
           </div>
@@ -1008,6 +1439,7 @@ function guardarDetalleLote(id){
   l.fecha_monta = val('d_fmonta') || l.fecha_monta;
   l.fecha_flushing_luminico = val('d_fflushing') || null;
   l.resultado_palpacion = val('d_palpacion');
+  l.nido_armado = { hecho: document.getElementById('d_nido_hecho').checked, fecha: document.getElementById('d_nido_fecha').value || null };
   l.fecha_real_parto = val('d_fparto') || null;
   l.nacidos_vivos = numOrNull(val('d_nvivos'));
   l.nacidos_muertos = numOrNull(val('d_nmuertos'));
@@ -1264,6 +1696,7 @@ function exportarConejosCSV(){
     {label:'ID_MADRE', get:c=>c.id_madre},
     {label:'ESTADO_DISPONIBILIDAD', get:c=>c.estado_disponibilidad},
     {label:'ESTADO_PRODUCTIVO', get:c=>c.estado_productivo},
+    {label:'CATEGORIA_USO', get:c=>c.categoria_uso},
   ];
   descargarCSV('cunipijaos_ejemplares_'+todayStr()+'.csv', toCSV(DB.conejos, headers));
   toast('CSV de ejemplares descargado');
@@ -1294,6 +1727,236 @@ function exportarLotesCSV(){
 }
 
 /* =========================================================
+   SOP DE CAMPO — REGISTRO RÁPIDO EN 4 PASOS
+   ========================================================= */
+let sopPaso = 1;
+let sopLoteActivo = null;
+
+function abrirSOP(){
+  sopPaso = 1;
+  sopLoteActivo = null;
+  renderSOP();
+}
+
+function renderSOP(){
+  const nombresPaso = ['Monta dirigida','Palpación','Nido','Pesaje / Cebo'];
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+      <div class="modal-box wide">
+        <h3 class="font-display text-xl mb-1">Registro rápido de campo (SOP)</h3>
+        <div class="flex gap-2 mb-4 mt-3 flex-wrap">
+          ${[1,2,3,4].map(n=>`<div class="flex-1 text-center text-xs py-1.5 rounded" style="min-width:110px; background:${sopPaso===n?'var(--primary)':'var(--surface-2)'}; color:${sopPaso===n?'#fff':'var(--muted)'}">${n}. ${nombresPaso[n-1]}</div>`).join('')}
+        </div>
+        <div id="sopBody"></div>
+        <div class="flex justify-between mt-5">
+          <button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button>
+          <div class="flex gap-2">
+            ${sopPaso>1 ? `<button class="btn btn-outline" onclick="sopPaso--; renderSOP();">Atrás</button>` : ''}
+            ${sopPaso<4 ? `<button class="btn btn-primary" onclick="sopPaso++; renderSOP();">Siguiente</button>` : `<button class="btn btn-primary" onclick="cerrarModal()">Finalizar</button>`}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalRoot').innerHTML = html;
+  renderSOPBody();
+}
+
+function renderSOPBody(){
+  const body = document.getElementById('sopBody');
+  if(sopPaso===1){
+    body.innerHTML = `
+      <p class="text-sm mb-3" style="color:var(--muted)">Paso 1 — Monta dirigida. Valida la matriz de reemplazos (consanguinidad y ciclos abiertos) antes de confirmar.</p>
+      <div id="sopAviso"></div>
+      <div class="grid sm:grid-cols-2 gap-x-4">
+        <div class="field"><label>ID de lote</label><input id="sop_id" type="text" value="${nextLoteId()}"></div>
+        <div class="field"></div>
+        <div class="field"><label>Macho</label><select id="sop_macho" onchange="revisarAvisosSOP()"><option value="">Seleccionar...</option>${machosActivos().map(m=>`<option value="${m.id_conejo}">${m.id_conejo}</option>`).join('')}</select></div>
+        <div class="field"><label>Hembra</label><select id="sop_hembra" onchange="revisarAvisosSOP()"><option value="">Seleccionar...</option>${hembrasActivas().map(m=>`<option value="${m.id_conejo}">${m.id_conejo}</option>`).join('')}</select></div>
+        <div class="field"><label>Fecha de monta</label><input id="sop_fmonta" type="date" value="${todayStr()}"></div>
+        <div class="field"><label>Flushing lumínico</label><input id="sop_fflushing" type="date"></div>
+      </div>
+      <button class="btn btn-primary btn-sm mt-1" onclick="confirmarSOPMonta()">Registrar monta dirigida</button>
+      <div id="sopConfirm1" class="text-xs mt-2" style="color:var(--primary-dark)"></div>`;
+  } else if(sopPaso===2){
+    const pendientes = DB.lotes.filter(l=>!l.resultado_palpacion || l.resultado_palpacion==='PENDIENTE');
+    body.innerHTML = `
+      <p class="text-sm mb-3" style="color:var(--muted)">Paso 2 — Confirmación de preñez. Registra el resultado de palpación de un lote pendiente.</p>
+      <div class="field"><label>Lote</label>
+        <select id="sop_lote_palp">
+          <option value="">Seleccionar...</option>
+          ${pendientes.map(l=>`<option value="${l.id_lote}" ${sopLoteActivo===l.id_lote?'selected':''}>${l.id_lote} (${l.id_macho} × ${l.id_hembra})</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Resultado</label>
+        <select id="sop_resultado">
+          <option value="POSITIVO">Positivo</option>
+          <option value="NEGATIVO">Negativo</option>
+          <option value="DUDOSO">Dudoso</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="confirmarSOPPalpacion()">Guardar palpación</button>
+      <div id="sopConfirm2" class="text-xs mt-2" style="color:var(--primary-dark)"></div>
+      ${!pendientes.length ? `<p class="text-sm mt-2" style="color:var(--muted)">No hay lotes pendientes de palpación.</p>` : ''}`;
+  } else if(sopPaso===3){
+    const candidatos = DB.lotes.filter(l=>l.resultado_palpacion==='POSITIVO' && !l.fecha_real_parto && !(l.nido_armado && l.nido_armado.hecho));
+    body.innerHTML = `
+      <p class="text-sm mb-3" style="color:var(--muted)">Paso 3 — Armado e higiene de nido para lotes gestantes confirmados.</p>
+      <div class="field"><label>Lote</label>
+        <select id="sop_lote_nido">
+          <option value="">Seleccionar...</option>
+          ${candidatos.map(l=>`<option value="${l.id_lote}">${l.id_lote} (${l.id_hembra})</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Fecha de armado</label><input id="sop_fecha_nido" type="date" value="${todayStr()}"></div>
+      <button class="btn btn-primary btn-sm" onclick="confirmarSOPNido()">Marcar nido armado</button>
+      <div id="sopConfirm3" class="text-xs mt-2" style="color:var(--primary-dark)"></div>
+      ${!candidatos.length ? `<p class="text-sm mt-2" style="color:var(--muted)">No hay lotes pendientes de armado de nido.</p>` : ''}`;
+  } else if(sopPaso===4){
+    body.innerHTML = `
+      <p class="text-sm mb-3" style="color:var(--muted)">Paso 4 — Pesaje y control de cebo. Manipula a los animales con calma, sin estrés etológico.</p>
+      <div class="field"><label>Lote</label>
+        <select id="sop_lote_peso" onchange="actualizarPesajesSOP()">
+          <option value="">Seleccionar...</option>
+          ${DB.lotes.map(l=>`<option value="${l.id_lote}">${l.id_lote}</option>`).join('')}
+        </select>
+      </div>
+      <div id="sopPesajeCampos"></div>`;
+  }
+}
+
+function revisarAvisosSOP(){
+  const macho = document.getElementById('sop_macho').value;
+  const hembra = document.getElementById('sop_hembra').value;
+  const el = document.getElementById('sopAviso');
+  let avisos = '';
+  if(macho && hembra && checkConsanguinidad(macho, hembra)) avisos += `<div class="warn-banner">⚠ Alerta de consanguinidad detectada en la matriz de reemplazos.</div>`;
+  if(hembra){ const abierto = loteAbiertoDeHembra(hembra, null); if(abierto) avisos += `<div class="warn-banner">⚠ La hembra ya tiene un ciclo abierto en el lote ${abierto.id_lote}.</div>`; }
+  el.innerHTML = avisos;
+}
+
+function confirmarSOPMonta(){
+  const id = document.getElementById('sop_id').value.trim();
+  const macho = document.getElementById('sop_macho').value;
+  const hembra = document.getElementById('sop_hembra').value;
+  const fmonta = document.getElementById('sop_fmonta').value;
+  const fflushing = document.getElementById('sop_fflushing').value;
+  if(!id || !macho || !hembra || !fmonta){ alert('Completa lote, macho, hembra y fecha de monta.'); return; }
+  if(DB.lotes.find(l=>l.id_lote===id)){ alert('Ya existe un lote con ese ID.'); return; }
+  DB.lotes.push({
+    id_lote:id, id_macho:macho, id_hembra:hembra, fecha_monta:fmonta, fecha_flushing_luminico:fflushing||null,
+    resultado_palpacion:'PENDIENTE', nacidos_vivos:null, nacidos_muertos:null, fecha_real_parto:null, fecha_real_destete:null,
+    cantidad_destetados:null, mortalidad_lactancia:null, nido_armado:{hecho:false,fecha:null}, comentario:'', unidad_peso:'kg',
+    pesajes:{p1:{},p2:{},p3:{},p4:{},p5:{}},
+  });
+  guardarDB();
+  sopLoteActivo = id;
+  document.getElementById('sopConfirm1').textContent = 'Lote ' + id + ' registrado correctamente.';
+  renderTodo();
+}
+
+function confirmarSOPPalpacion(){
+  const id = document.getElementById('sop_lote_palp').value;
+  if(!id){ alert('Selecciona un lote.'); return; }
+  const l = DB.lotes.find(x=>x.id_lote===id);
+  l.resultado_palpacion = document.getElementById('sop_resultado').value;
+  const hembra = getConejo(l.id_hembra);
+  if(hembra && l.resultado_palpacion==='POSITIVO') hembra.estado_productivo = 'GESTANTE_CONFIRMADA';
+  guardarDB();
+  document.getElementById('sopConfirm2').textContent = 'Palpación registrada para ' + id + '.';
+  renderTodo();
+}
+
+function confirmarSOPNido(){
+  const id = document.getElementById('sop_lote_nido').value;
+  if(!id){ alert('Selecciona un lote.'); return; }
+  const l = DB.lotes.find(x=>x.id_lote===id);
+  l.nido_armado = { hecho:true, fecha: document.getElementById('sop_fecha_nido').value || todayStr() };
+  guardarDB();
+  document.getElementById('sopConfirm3').textContent = 'Nido armado registrado para ' + id + '.';
+  renderTodo();
+}
+
+function actualizarPesajesSOP(){
+  const id = document.getElementById('sop_lote_peso').value;
+  const cont = document.getElementById('sopPesajeCampos');
+  if(!id){ cont.innerHTML=''; return; }
+  const l = DB.lotes.find(x=>x.id_lote===id);
+  const f = fechasLote(l);
+  const opciones = ['p1','p2','p3','p4','p5'].map(key=>{
+    const def = f.pesajes[key];
+    const hecho = l.pesajes[key] && (l.pesajes[key].cantidad || l.pesajes[key].peso);
+    return `<option value="${key}" ${hecho?'disabled':''}>Pesaje ${def.n} — ${def.label}${hecho?' (ya registrado)':''}</option>`;
+  }).join('');
+  cont.innerHTML = `
+    <div class="field"><label>Pesaje</label><select id="sop_pesaje_key">${opciones}</select></div>
+    <div class="grid sm:grid-cols-2 gap-x-4">
+      <div class="field"><label>Cantidad de animales</label><input id="sop_pesaje_cant" type="number" min="0"></div>
+      <div class="field"><label>Peso total (${l.unidad_peso||'kg'})</label><input id="sop_pesaje_peso" type="number" min="0" step="0.01"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="confirmarSOPPesaje('${id}')">Guardar pesaje</button>
+    <div id="sopConfirm4" class="text-xs mt-2" style="color:var(--primary-dark)"></div>`;
+}
+
+function confirmarSOPPesaje(id){
+  const l = DB.lotes.find(x=>x.id_lote===id);
+  const key = document.getElementById('sop_pesaje_key').value;
+  const cant = document.getElementById('sop_pesaje_cant').value;
+  const peso = document.getElementById('sop_pesaje_peso').value;
+  l.pesajes[key] = { cantidad: cant===''?null:Number(cant), peso: peso===''?null:Number(peso) };
+  guardarDB();
+  document.getElementById('sopConfirm4').textContent = 'Pesaje registrado para ' + id + '.';
+  renderTodo();
+  actualizarPesajesSOP();
+}
+
+/* =========================================================
+   ETIQUETAS QR (TRAZABILIDAD DE CAMPO)
+   ========================================================= */
+function abrirEtiquetaQR(tipo, id){
+  let titulo, subt, payload;
+  if(tipo === 'conejo'){
+    const c = getConejo(id);
+    if(!c) return;
+    titulo = c.id_conejo;
+    subt = `${c.sexo==='MACHO'?'Macho':'Hembra'} · ${c.raza||'Genotipo s/d'} · ${labelCategoriaUso(c.categoria_uso)}`;
+    payload = `CUNIPIJAOS|CONEJO|${c.id_conejo}`;
+  } else {
+    const l = DB.lotes.find(x=>x.id_lote===id);
+    if(!l) return;
+    titulo = l.id_lote;
+    subt = `${l.id_macho} × ${l.id_hembra} · Sincronización ${fmt(l.fecha_monta)}`;
+    payload = `CUNIPIJAOS|LOTE|${l.id_lote}`;
+  }
+  const html = `
+    <div class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+      <div class="modal-box" style="max-width:360px; text-align:center;">
+        <h3 class="font-display text-lg mb-3">Etiqueta de trazabilidad</h3>
+        <div id="qrLabelPrint" class="qr-label">
+          <div class="mono" style="font-size:1.3rem; font-weight:600;">${titulo}</div>
+          <div id="qrCanvas" class="flex justify-center my-3"></div>
+          <div class="text-xs" style="color:var(--muted)">${subt}</div>
+        </div>
+        <div class="flex justify-center gap-2 mt-4">
+          <button class="btn btn-outline" onclick="cerrarModal()">Cerrar</button>
+          <button class="btn btn-primary" onclick="imprimirEtiquetaQR()">Imprimir etiqueta</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modalRoot').innerHTML = html;
+  try{
+    new QRCode(document.getElementById('qrCanvas'), { text: payload, width:140, height:140 });
+  }catch(e){
+    document.getElementById('qrCanvas').innerHTML = '<div class="text-xs" style="color:var(--muted)">No se pudo generar el código QR (revisa tu conexión a internet la primera vez que cargas la página).</div>';
+  }
+}
+
+function imprimirEtiquetaQR(){
+  document.body.classList.add('printing-label');
+  window.print();
+  setTimeout(()=>document.body.classList.remove('printing-label'), 300);
+}
+
+/* =========================================================
    MODAL GENÉRICO
    ========================================================= */
 function cerrarModal(){ document.getElementById('modalRoot').innerHTML = ''; }
@@ -1305,6 +1968,91 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarModal(); })
 cargarDB();
 renderTodo();
 cambiarTab('panel');
+cargarClima();
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDhuvxC7KRtz3LCE6LCrHaBLwTBFnmo4NA",
+    authDomain: "cunipijaos.firebaseapp.com",
+    projectId: "cunipijaos",
+    storageBucket: "cunipijaos.firebasestorage.app",
+    messagingSenderId: "424703638105",
+    appId: "1:424703638105:web:df85f407290fe2ed0a8f48",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const refDoc = doc(db, "granjas", "cunipijaos");
+
+  let ultimoJsonRemoto = null; // para no re-renderizar en eco de nuestra propia escritura
+  const estadoEl = () => document.getElementById('nubeEstado');
+
+  function marcarEstado(texto, color){
+    const el = estadoEl();
+    if(el){ el.textContent = texto; el.style.color = color; }
+  }
+
+  window.CuniNube = {
+    listo: false,
+    async subir(dbObjeto){
+      try{
+        const json = JSON.stringify(dbObjeto);
+        ultimoJsonRemoto = json;
+        marcarEstado('☁ Sincronizando…', '#E8D9A8');
+        await setDoc(refDoc, JSON.parse(json));
+        marcarEstado('☁ Sincronizado', '#B7D0BB');
+      }catch(e){
+        console.error('Error subiendo a Firestore', e);
+        marcarEstado('⚠ Sin conexión (guardado local)', '#E0B3A8');
+      }
+    }
+  };
+
+  async function iniciar(){
+    try{
+      await signInAnonymously(auth);
+    }catch(e){
+      console.error('Error de autenticación anónima', e);
+      marcarEstado('⚠ Firebase no disponible (usando copia local)', '#E0B3A8');
+      return;
+    }
+
+    try{
+      const snap = await getDoc(refDoc);
+      if(snap.exists()){
+        // Ya hay datos en la nube: se usan como fuente de verdad
+        ultimoJsonRemoto = JSON.stringify(snap.data());
+        window.reemplazarDBDesdeNube(snap.data());
+      } else {
+        // Primera vez: se sube lo que ya había localmente en este dispositivo
+        const actual = window.obtenerDBActual();
+        await setDoc(refDoc, JSON.parse(JSON.stringify(actual)));
+        ultimoJsonRemoto = JSON.stringify(actual);
+      }
+      window.CuniNube.listo = true;
+      marcarEstado('☁ Sincronizado', '#B7D0BB');
+
+      onSnapshot(refDoc, (snap)=>{
+        if(!snap.exists()) return;
+        const json = JSON.stringify(snap.data());
+        if(json === ultimoJsonRemoto) return; // es el eco de nuestra propia escritura
+        ultimoJsonRemoto = json;
+        window.reemplazarDBDesdeNube(snap.data());
+        marcarEstado('☁ Actualizado desde otro dispositivo', '#B7D0BB');
+      });
+    }catch(e){
+      console.error('Error conectando a Firestore', e);
+      marcarEstado('⚠ Sin conexión (usando copia local)', '#E0B3A8');
+    }
+  }
+
+  iniciar();
 </script>
 </body>
 </html>
